@@ -1,8 +1,26 @@
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
+import { useEffect, useState } from "react";
 
 const LoginPage = () => {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error("유저 정보를 가져오는 중 에러:", error.message);
+      } else {
+        setUser(data.user);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   const signInWithGithub = async () => {
     const supabase = createClient();
 
@@ -51,6 +69,9 @@ const LoginPage = () => {
   return (
     <>
       <h1>Login page</h1>
+
+      {user ? <p>환영합니다, {user.email}</p> : <p>로그인된 유저 없음</p>}
+
       <form>
         <button
           onClick={signInWithGithub}
