@@ -157,3 +157,57 @@ const signInWith = (provider: Provider) => async () => {
 
 export const signInWithGithub = signInWith("github");
 export const signInWithKakao = signInWith("kakao");
+
+export async function handleRegister(formData: FormData): Promise<void> {
+  const supabase = await createClient();
+
+  // FormData 값 꺼내기
+  const data = Object.fromEntries(formData.entries());
+  const tech_stack = formData.getAll("tech_stack"); // 배열로 받기
+  const positions = formData.getAll("positions");
+
+  const {
+    category,
+    recruitment_count,
+    mode,
+    duration,
+    deadline,
+    contact_method,
+    contact_link,
+    title,
+    content,
+  } = data;
+
+  // 현재 로그인한 유저 정보 가져오기
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  // Supabase insert
+  const { error } = await supabase.from("posts").insert({
+    category,
+    recruitment_count,
+    mode,
+    duration,
+    deadline,
+    contact_method,
+    contact_link,
+    title,
+    content,
+    tech_stack,
+    positions,
+    user_id: user.id, // 명시적으로 삽입
+  });
+
+  if (error) {
+    console.error("삽입 실패:", error.message);
+  } else {
+    console.log("✅ 삽입 성공!");
+  }
+}
