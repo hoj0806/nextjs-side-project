@@ -212,8 +212,8 @@ export async function handleRegister(formData: FormData): Promise<void> {
   }
 }
 
-export async function getAllPosts() {
-  const supabase = await createClient(); // ✅ 반드시 await 사용
+export async function getPosts() {
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("posts")
