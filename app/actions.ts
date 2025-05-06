@@ -227,3 +227,20 @@ export async function getPosts() {
 
   return data;
 }
+
+export async function getPostById(id: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("게시글 조회 실패:", error.message);
+    return null;
+  }
+
+  return data;
+}
