@@ -1,13 +1,13 @@
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-import { signOutAction } from "./actions";
+import { getAllPosts, signOutAction } from "./actions";
 
 export default async function Home() {
   const supabase = await createClient();
 
   const session = await supabase.auth.getUser();
 
-  console.log(session);
+  const data = await getAllPosts();
+  console.log(data, session);
   // if (error || !data?.user) {
   //   redirect("/login");
   // }
