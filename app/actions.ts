@@ -211,3 +211,19 @@ export async function handleRegister(formData: FormData): Promise<void> {
     console.log("✅ 삽입 성공!");
   }
 }
+
+export async function getPosts() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("게시글 조회 실패:", error.message);
+    return [];
+  }
+
+  return data;
+}
