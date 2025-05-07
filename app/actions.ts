@@ -252,6 +252,35 @@ export async function getPostById(id: string) {
   return data;
 }
 
+export async function getMyPosts() {
+  const supabase = await createClient();
+
+  // 현재 로그인한 유저 정보 가져오기
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return [];
+  }
+
+  // 현재 유저가 작성한 게시물 조회
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("❌ 나의 게시물 조회 실패:", error.message);
+    return [];
+  }
+
+  return data;
+}
+
 // 댓글 삽입 함수
 export async function insertComment(formData: FormData) {
   const supabase = await createClient();
