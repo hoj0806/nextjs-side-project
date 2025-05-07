@@ -244,3 +244,39 @@ export async function getPostById(id: string) {
 
   return data;
 }
+
+// 댓글 삽입 함수
+export async function insertComment(formData: FormData) {
+  const supabase = await createClient();
+  const post_id = formData.get("post_id")?.toString();
+  const content = formData.get("content")?.toString();
+
+  if (!post_id || !content) {
+    console.error("❌ post_id와 content는 필수입니다.");
+    return;
+  }
+
+  // 로그인된 사용자 확인
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  // 댓글 삽입
+  const { error } = await supabase.from("comments").insert({
+    post_id,
+    content,
+    email: user.user_metadata.email,
+  });
+
+  if (error) {
+    console.error("❌ 댓글 삽입 실패:", error.message);
+  } else {
+    console.log("✅ 댓글 삽입 성공!");
+  }
+}

@@ -1,4 +1,4 @@
-import { getPostById } from "@/app/actions";
+import { getPostById, insertComment } from "@/app/actions";
 
 type PostDetailPageProps = {
   params: {
@@ -17,6 +17,7 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
     );
   }
 
+  console.log(post);
   return (
     <div className='max-w-3xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-md space-y-6'>
       <h1 className='text-2xl font-bold'>{post.title}</h1>
@@ -68,6 +69,23 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
           </span>
         </div>
       </div>
+
+      {/* 💬 댓글 작성 */}
+      <form action={insertComment} className='space-y-4 mt-8'>
+        <input type='hidden' name='post_id' value={params.postId} />
+        <textarea
+          name='content'
+          required
+          className='w-full border p-2 rounded resize-none'
+          placeholder='댓글을 입력하세요'
+        />
+        <button
+          type='submit'
+          className='bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700'
+        >
+          댓글 작성
+        </button>
+      </form>
     </div>
   );
 };

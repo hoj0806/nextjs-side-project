@@ -10,11 +10,8 @@ export default async function Home() {
 
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
         {data.map((post) => (
-          <Link href={`/study/${post.id}`}>
-            <div
-              key={post.id}
-              className='bg-white border border-gray-200 shadow-sm rounded-xl p-4 space-y-2'
-            >
+          <Link href={`/study/${post.id}`} key={post.id}>
+            <div className='bg-white border border-gray-200 shadow-sm rounded-xl p-4 space-y-2'>
               <div className='text-sm text-gray-500'>{post.category}</div>
               <h2 className='text-lg font-semibold truncate text-black'>
                 {post.title}
