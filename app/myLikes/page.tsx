@@ -1,19 +1,21 @@
 import Link from "next/link";
-import { getPosts, getMyLikes, likePost, unlikePost } from "./actions";
+import { getMyLikes, getPosts, unlikePost } from "../actions";
 
-export default async function Home() {
-  const [posts, likes] = await Promise.all([getPosts(), getMyLikes()]);
-  const likedPostIds = new Set(likes.map((like) => like.post_id));
+const MyLikesPage = async () => {
+  const likes = await getMyLikes();
+  const postIds = likes.map((like) => like.post_id);
+
+  const likedPosts = postIds.length > 0 ? await getPosts(postIds) : [];
 
   return (
     <main className='max-w-7xl mx-auto p-6'>
-      <h1 className='text-2xl font-bold mb-6'>모집 게시판</h1>
+      <h1 className='text-2xl font-bold mb-6'>내 관심 게시물</h1>
 
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-        {posts.map((post) => {
-          const isLiked = likedPostIds.has(post.id);
-
-          return (
+      {likedPosts.length === 0 ? (
+        <p className='text-gray-500'>아직 찜한 게시물이 없습니다.</p>
+      ) : (
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+          {likedPosts.map((post) => (
             <div
               key={post.id}
               className='bg-white border border-gray-200 shadow-sm rounded-xl p-4 space-y-2 relative'
@@ -36,29 +38,22 @@ export default async function Home() {
                 </div>
               </Link>
 
-              {/* 💜 찜 버튼 */}
-              <form
-                action={isLiked ? unlikePost : likePost}
-                className='absolute top-2 right-2'
-              >
+              {/* 💜 찜 취소 버튼 */}
+              <form action={unlikePost} className='absolute top-2 right-2'>
                 <input type='hidden' name='post_id' value={post.id} />
                 <button
                   type='submit'
-                  className={`text-sm px-2 py-1 rounded ${
-                    isLiked
-                      ? "bg-red-100 text-red-600 hover:bg-red-200"
-                      : "bg-purple-100 text-purple-600 hover:bg-purple-200"
-                  }`}
+                  className='text-sm px-2 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200'
                 >
-                  {isLiked ? "찜 취소" : "찜하기"}
+                  찜 취소
                 </button>
               </form>
-
-              <></>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </main>
   );
-}
+};
+
+export default MyLikesPage;
