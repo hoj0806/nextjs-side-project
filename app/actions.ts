@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Provider } from "@supabase/supabase-js";
+import { revalidatePath } from "next/cache";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -279,6 +280,8 @@ export async function insertComment(formData: FormData) {
   } else {
     console.log("✅ 댓글 삽입 성공!");
   }
+
+  revalidatePath(`/posts/${post_id}`);
 }
 
 export async function getCommentsByPostId(postId: string) {
