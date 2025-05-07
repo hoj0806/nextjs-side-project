@@ -300,3 +300,51 @@ export async function getCommentsByPostId(postId: string) {
 
   return data;
 }
+
+// 댓글 삭제 함수
+export async function deleteComment(commentId: string) {
+  const supabase = await createClient();
+
+  // 로그인된 사용자 확인
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  // 댓글 조회
+  const { data: comment, error: commentError } = await supabase
+    .from("comments")
+    .select("author_id")
+    .eq("id", commentId)
+    .single();
+
+  if (commentError) {
+    console.error("❌ 댓글 조회 실패:", commentError.message);
+    return;
+  }
+
+  // 로그인된 유저가 댓글 작성자인지 확인
+  if (comment.author_id !== user.id) {
+    console.error("❌ 이 댓글은 삭제할 권한이 없습니다.");
+    return;
+  }
+
+  // 댓글 삭제
+  const { error: deleteError } = await supabase
+    .from("comments")
+    .delete()
+    .eq("id", commentId);
+
+  if (deleteError) {
+    console.error("❌ 댓글 삭제 실패:", deleteError.message);
+  } else {
+    console.log("✅ 댓글 삭제 성공!");
+  }
+
+  revalidatePath(`/posts/${comment.post_id}`);
+}

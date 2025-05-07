@@ -1,4 +1,10 @@
-import { getCommentsByPostId, getPostById, insertComment } from "@/app/actions";
+import {
+  getCommentsByPostId,
+  getPostById,
+  insertComment,
+  deleteComment,
+} from "@/app/actions";
+import CommentDeleteButton from "@/components/CommentDeleteButton";
 
 type PostDetailPageProps = {
   params: {
@@ -18,7 +24,6 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
     );
   }
 
-  console.log(post);
   return (
     <div className='max-w-3xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-md space-y-6'>
       <h1 className='text-2xl font-bold'>{post.title}</h1>
@@ -105,6 +110,10 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
               <div className='text-gray-500 text-xs mt-2'>
                 작성자: {comment.email ?? "알 수 없음"} ·{" "}
                 {new Date(comment.created_at).toLocaleString()}
+              </div>
+              {/* 댓글 삭제 버튼 추가 */}
+              <div className='mt-2'>
+                <CommentDeleteButton commentId={comment.id} />
               </div>
             </div>
           ))
