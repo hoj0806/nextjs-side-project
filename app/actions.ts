@@ -280,3 +280,20 @@ export async function insertComment(formData: FormData) {
     console.log("✅ 댓글 삽입 성공!");
   }
 }
+
+export async function getCommentsByPostId(postId: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("comments")
+    .select("*")
+    .eq("post_id", postId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("댓글 조회 실패:", error.message);
+    return [];
+  }
+
+  return data;
+}
