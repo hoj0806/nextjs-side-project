@@ -213,13 +213,19 @@ export async function handleRegister(formData: FormData): Promise<void> {
   }
 }
 
-export async function getPosts() {
+export async function getPosts(postIds?: string[]) {
   const supabase = await createClient();
-
-  const { data, error } = await supabase
+  let query = supabase
     .from("posts")
     .select("*")
     .order("created_at", { ascending: false });
+
+  // postIds가 주어졌다면 필터링 쿼리 추가
+  if (postIds && postIds.length > 0) {
+    query = query.in("id", postIds);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("게시글 조회 실패:", error.message);
@@ -390,6 +396,7 @@ export async function likePost(formData: FormData) {
 
   const { error } = await supabase.from("likes").insert({
     post_id,
+    user_id: user.id, // user_id 명시적으로 지정
   });
 
   if (error) {

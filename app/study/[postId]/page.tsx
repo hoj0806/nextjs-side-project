@@ -1,9 +1,4 @@
-import {
-  getCommentsByPostId,
-  getPostById,
-  insertComment,
-  deleteComment,
-} from "@/app/actions";
+import { getCommentsByPostId, getPostById, insertComment } from "@/app/actions";
 import CommentDeleteButton from "@/components/CommentDeleteButton";
 
 type PostDetailPageProps = {
