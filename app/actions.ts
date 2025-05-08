@@ -216,7 +216,8 @@ export async function handleRegister(formData: FormData): Promise<void> {
 export async function getPosts(
   categoryParams?: string,
   modeParams?: string,
-  positionParams?: string
+  positionParams?: string,
+  searchQuery?: string
 ) {
   const supabase = await createClient();
   let query = supabase
@@ -233,8 +234,13 @@ export async function getPosts(
   }
 
   if (positionParams) {
-    // positions 배열과 겹치는 요소가 있으면 조회
     query = query.overlaps("positions", [positionParams]);
+  }
+
+  if (searchQuery) {
+    query = query.or(
+      `title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`
+    );
   }
 
   const { data, error } = await query;

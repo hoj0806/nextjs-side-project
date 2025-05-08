@@ -2,14 +2,25 @@ import Link from "next/link";
 import { getPosts, getMyLikes, likePost, unlikePost } from "../../app/actions";
 import CategoryFilter from "../ui/categoryFilter";
 import DropdownFilter from "../ui/dropdown-filter";
+import SearchInput from "../ui/search-input";
 
 export default async function PostGrid({
   searchParams,
 }: {
-  searchParams: { category?: string; mode?: string; position?: string };
+  searchParams: {
+    category?: string;
+    mode?: string;
+    position?: string;
+    search?: string;
+  };
 }) {
   const [posts, likes] = await Promise.all([
-    getPosts(searchParams.category, searchParams.mode, searchParams.position),
+    getPosts(
+      searchParams.category,
+      searchParams.mode,
+      searchParams.position,
+      searchParams.search
+    ),
     getMyLikes(),
   ]);
   const likedPostIds = new Set(likes.map((like) => like.post_id));
@@ -30,6 +41,7 @@ export default async function PostGrid({
           data={["전체", "프론트엔드", "백엔드", "디자이너"]}
           labelName='포지션'
         />
+        <SearchInput />
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
         {posts.map((post) => {
