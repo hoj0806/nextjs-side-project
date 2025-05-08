@@ -217,12 +217,14 @@ export async function getPosts(
   categoryParams?: string,
   modeParams?: string,
   positionParams?: string,
-  searchQuery?: string
+  searchQuery?: string,
+  page: number = 1,
+  pageSize: number = 1
 ) {
   const supabase = await createClient();
   let query = supabase
     .from("posts")
-    .select("*")
+    .select("*", { count: "exact" })
     .order("created_at", { ascending: false });
 
   if (categoryParams) {
@@ -242,15 +244,17 @@ export async function getPosts(
       `title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`
     );
   }
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
 
-  const { data, error } = await query;
+  const { data, error, count } = await query.range(from, to);
 
   if (error) {
     console.error("게시글 조회 실패:", error.message);
-    return [];
+    return { data: [], total: 0 };
   }
 
-  return data;
+  return { data, total: count ?? 0 }; // ✅ 총 개수 함께 반환
 }
 
 export async function getPostById(id: string) {

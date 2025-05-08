@@ -3,6 +3,7 @@ import { getPosts, getMyLikes, likePost, unlikePost } from "../../app/actions";
 import CategoryFilter from "../ui/categoryFilter";
 import DropdownFilter from "../ui/dropdown-filter";
 import SearchInput from "../ui/search-input";
+import Pagination from "../ui/pagination";
 
 export default async function PostGrid({
   searchParams,
@@ -12,23 +13,31 @@ export default async function PostGrid({
     mode?: string;
     position?: string;
     search?: string;
+    page?: string;
   };
 }) {
+  const pageSize = 1;
+  const page = parseInt(searchParams.page || "1", 10);
+
   const [posts, likes] = await Promise.all([
     getPosts(
       searchParams.category,
       searchParams.mode,
       searchParams.position,
-      searchParams.search
+      searchParams.search,
+      page,
+      pageSize
     ),
     getMyLikes(),
   ]);
   const likedPostIds = new Set(likes.map((like) => like.post_id));
 
+  console.log(posts.total);
+
   return (
     <main className='max-w-7xl mx-auto p-6'>
       <h1 className='text-2xl font-bold mb-6'>모집 게시판</h1>
-
+      <Pagination total={posts.total} pageSize={pageSize} />
       <CategoryFilter />
       <div className='flex gap-4'>
         <DropdownFilter
@@ -44,7 +53,7 @@ export default async function PostGrid({
         <SearchInput />
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-        {posts.map((post) => {
+        {posts.data.map((post) => {
           const isLiked = likedPostIds.has(post.id);
 
           return (
