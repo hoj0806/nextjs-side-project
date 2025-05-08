@@ -8,6 +8,7 @@ export default async function Home({
     mode?: string;
     position?: string;
     search?: string;
+    page?: string;
   };
 }) {
   return <PostGrid searchParams={searchParams} />;
