@@ -1,23 +1,36 @@
 import Link from "next/link";
 import { getPosts, getMyLikes, likePost, unlikePost } from "../../app/actions";
 import CategoryFilter from "../ui/categoryFilter";
+import DropdownFilter from "../ui/dropdown-filter";
 
 export default async function PostGrid({
   searchParams,
 }: {
-  searchParams: { category?: string };
+  searchParams: { category?: string; mode?: string; position?: string };
 }) {
   const [posts, likes] = await Promise.all([
-    getPosts(searchParams.category),
+    getPosts(searchParams.category, searchParams.mode, searchParams.position),
     getMyLikes(),
   ]);
   const likedPostIds = new Set(likes.map((like) => like.post_id));
 
-  console.log(searchParams.category);
   return (
     <main className='max-w-7xl mx-auto p-6'>
       <h1 className='text-2xl font-bold mb-6'>모집 게시판</h1>
+
       <CategoryFilter />
+      <div className='flex gap-4'>
+        <DropdownFilter
+          paramsName='mode'
+          data={["전체", "온라인", "오프라인", "온/오프라인"]}
+          labelName='진행 방식'
+        />
+        <DropdownFilter
+          paramsName='position'
+          data={["전체", "프론트엔드", "백엔드", "디자이너"]}
+          labelName='포지션'
+        />
+      </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
         {posts.map((post) => {
           const isLiked = likedPostIds.has(post.id);
