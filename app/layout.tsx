@@ -1,5 +1,3 @@
-import HeaderAuth from "@/components/header-auth";
-import Link from "next/link";
 import "./globals.css";
 import Navigation from "@/components/ui/Navigation";
 

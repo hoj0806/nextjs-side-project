@@ -213,16 +213,15 @@ export async function handleRegister(formData: FormData): Promise<void> {
   }
 }
 
-export async function getPosts(postIds?: string[]) {
+export async function getPosts(categoryParams?: string) {
   const supabase = await createClient();
   let query = supabase
     .from("posts")
     .select("*")
     .order("created_at", { ascending: false });
 
-  // postIds가 주어졌다면 필터링 쿼리 추가
-  if (postIds && postIds.length > 0) {
-    query = query.in("id", postIds);
+  if (categoryParams) {
+    query = query.eq("category", categoryParams);
   }
 
   const { data, error } = await query;
