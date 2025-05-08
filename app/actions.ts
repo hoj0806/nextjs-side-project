@@ -457,3 +457,51 @@ export async function unlikePost(formData: FormData) {
 
   revalidatePath("/");
 }
+
+export async function deletePost(formData: FormData) {
+  const supabase = await createClient();
+  const post_id = formData.get("post_id")?.toString();
+  // 로그인된 사용자 정보 가져오기
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  // 삭제할 게시글이 현재 유저의 것인지 확인
+  const { data: post, error: postError } = await supabase
+    .from("posts")
+    .select("user_id")
+    .eq("id", post_id)
+    .single();
+
+  if (postError) {
+    console.error("❌ 게시글 조회 실패:", postError.message);
+    return;
+  }
+
+  if (post.user_id !== user.id) {
+    console.error("❌ 이 게시글을 삭제할 권한이 없습니다.");
+    return;
+  }
+
+  // 게시글 삭제
+  const { error: deleteError } = await supabase
+    .from("posts")
+    .delete()
+    .eq("id", post_id);
+
+  if (deleteError) {
+    console.error("❌ 게시글 삭제 실패:", deleteError.message);
+    return;
+  }
+
+  console.log("✅ 게시글 삭제 성공!");
+
+  revalidatePath("/");
+  redirect("/");
+}
