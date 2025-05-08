@@ -1,5 +1,11 @@
-import { getCommentsByPostId, getPostById, insertComment } from "@/app/actions";
+import {
+  deletePost,
+  getCommentsByPostId,
+  getPostById,
+  insertComment,
+} from "@/app/actions";
 import CommentDeleteButton from "@/components/CommentDeleteButton";
+import { createClient } from "@/utils/supabase/server";
 
 type PostDetailPageProps = {
   params: {
@@ -8,6 +14,11 @@ type PostDetailPageProps = {
 };
 
 const PostDetailPage = async ({ params }: PostDetailPageProps) => {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const post = await getPostById(params.postId);
   const comments = await getCommentsByPostId(params.postId);
 
@@ -19,8 +30,22 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
     );
   }
 
+  const isAuthor = user?.id === post.user_id;
+
   return (
-    <div className='max-w-3xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-md space-y-6'>
+    <div className='max-w-3xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-md space-y-6 relative'>
+      {isAuthor && (
+        <form action={deletePost} className='absolute top-4 right-4'>
+          <input type='hidden' name='post_id' value={params.postId} />
+          <button
+            type='submit'
+            className='text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600'
+          >
+            삭제
+          </button>
+        </form>
+      )}
+
       <h1 className='text-2xl font-bold'>{post.title}</h1>
 
       <div className='text-gray-700 whitespace-pre-wrap'>{post.content}</div>
