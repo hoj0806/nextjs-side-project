@@ -5,6 +5,7 @@ import {
   insertComment,
 } from "@/app/actions";
 import CommentDeleteButton from "@/components/CommentDeleteButton";
+import PostContent from "@/components/ui/register/PostContent";
 import { createClient } from "@/utils/supabase/server";
 
 type PostDetailPageProps = {
@@ -33,7 +34,7 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
   const isAuthor = user?.id === post.user_id;
 
   return (
-    <div className='max-w-3xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-md space-y-6 relative'>
+    <div className='w-full max-w-screen-xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-md space-y-6 relative text-black'>
       {isAuthor && (
         <form action={deletePost} className='absolute top-4 right-4'>
           <input type='hidden' name='post_id' value={params.postId} />
@@ -48,7 +49,7 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
 
       <h1 className='text-2xl font-bold'>{post.title}</h1>
 
-      <div className='text-gray-700 whitespace-pre-wrap'>{post.content}</div>
+      <PostContent content={post.content} />
 
       <div className='grid grid-cols-2 gap-4 text-sm text-gray-600'>
         <div>
