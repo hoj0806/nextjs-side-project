@@ -213,7 +213,11 @@ export async function handleRegister(formData: FormData): Promise<void> {
   }
 }
 
-export async function getPosts(categoryParams?: string) {
+export async function getPosts(
+  categoryParams?: string,
+  modeParams?: string,
+  positionParams?: string
+) {
   const supabase = await createClient();
   let query = supabase
     .from("posts")
@@ -222,6 +226,15 @@ export async function getPosts(categoryParams?: string) {
 
   if (categoryParams) {
     query = query.eq("category", categoryParams);
+  }
+
+  if (modeParams) {
+    query = query.eq("mode", modeParams);
+  }
+
+  if (positionParams) {
+    // positions 배열과 겹치는 요소가 있으면 조회
+    query = query.overlaps("positions", [positionParams]);
   }
 
   const { data, error } = await query;
