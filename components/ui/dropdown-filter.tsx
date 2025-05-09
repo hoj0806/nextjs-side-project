@@ -30,7 +30,7 @@ const DropdownFilter = ({
       } else {
         params.set(name, value);
       }
-
+      params.set("page", "1");
       return params.toString();
     },
     [searchParams]

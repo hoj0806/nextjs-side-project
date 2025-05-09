@@ -16,7 +16,7 @@ const SearchInput = () => {
     } else {
       params.delete("search");
     }
-
+    params.set("page", "1");
     router.push(`?${params.toString()}`);
   };
 

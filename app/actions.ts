@@ -219,7 +219,8 @@ export async function getPosts(
   positionParams?: string,
   searchQuery?: string,
   page: number = 1,
-  pageSize: number = 1
+  pageSize: number = 1,
+  showAll?: string // ✅ 바뀐 이름
 ) {
   const supabase = await createClient();
   let query = supabase
@@ -244,6 +245,12 @@ export async function getPosts(
       `title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`
     );
   }
+
+  // ✅ showAll이 아닌 경우엔 모집중인 게시물만
+  if (showAll !== "true") {
+    query = query.eq("expired", false);
+  }
+
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
@@ -254,7 +261,7 @@ export async function getPosts(
     return { data: [], total: 0 };
   }
 
-  return { data, total: count ?? 0 }; // ✅ 총 개수 함께 반환
+  return { data, total: count ?? 0 };
 }
 
 export async function getPostById(id: string) {
@@ -529,9 +536,9 @@ export async function deletePost(formData: FormData) {
 }
 
 // 게시글 expired를 true로 설정
-export async function expirePost(postId: string) {
+export async function expirePost(formData: FormData) {
+  const postId = formData.get("post_id") as string;
   const supabase = await createClient();
-
   const {
     data: { user },
     error: userError,
@@ -573,7 +580,8 @@ export async function expirePost(postId: string) {
 }
 
 // 게시글 expired를 false로 설정
-export async function unexpirePost(postId: string) {
+export async function unexpirePost(formData: FormData) {
+  const postId = formData.get("post_id") as string;
   const supabase = await createClient();
 
   const {

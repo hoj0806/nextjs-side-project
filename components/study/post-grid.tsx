@@ -4,6 +4,7 @@ import CategoryFilter from "../ui/categoryFilter";
 import DropdownFilter from "../ui/dropdown-filter";
 import SearchInput from "../ui/search-input";
 import Pagination from "../ui/pagination";
+import ShowAllToggleButton from "../ui/showAll-toggle-button";
 
 export default async function PostGrid({
   searchParams,
@@ -14,6 +15,7 @@ export default async function PostGrid({
     position?: string;
     search?: string;
     page?: string;
+    showAll?: string;
   };
 }) {
   const pageSize = 2;
@@ -26,12 +28,14 @@ export default async function PostGrid({
       searchParams.position,
       searchParams.search,
       page,
-      pageSize
+      pageSize,
+      searchParams.showAll
     ),
     getMyLikes(),
   ]);
   const likedPostIds = new Set(likes.map((like) => like.post_id));
 
+  console.log(123);
   return (
     <main className='max-w-7xl mx-auto p-6'>
       <h1 className='text-2xl font-bold mb-6'>모집 게시판</h1>
@@ -49,6 +53,7 @@ export default async function PostGrid({
           labelName='포지션'
         />
         <SearchInput />
+        <ShowAllToggleButton />
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
         {posts.data.map((post) => {
@@ -94,8 +99,6 @@ export default async function PostGrid({
                   {isLiked ? "찜 취소" : "찜하기"}
                 </button>
               </form>
-
-              <></>
             </div>
           );
         })}
