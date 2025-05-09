@@ -4,6 +4,7 @@ import CategoryFilter from "../ui/categoryFilter";
 import DropdownFilter from "../ui/dropdown-filter";
 import SearchInput from "../ui/search-input";
 import Pagination from "../ui/pagination";
+import ShowAllToggleButton from "../ui/showAll-toggle-button";
 
 export default async function PostGrid({
   searchParams,
@@ -14,9 +15,10 @@ export default async function PostGrid({
     position?: string;
     search?: string;
     page?: string;
+    showAll?: string;
   };
 }) {
-  const pageSize = 1;
+  const pageSize = 2;
   const page = parseInt(searchParams.page || "1", 10);
 
   const [posts, likes] = await Promise.all([
@@ -26,13 +28,12 @@ export default async function PostGrid({
       searchParams.position,
       searchParams.search,
       page,
-      pageSize
+      pageSize,
+      searchParams.showAll
     ),
     getMyLikes(),
   ]);
   const likedPostIds = new Set(likes.map((like) => like.post_id));
-
-  console.log(posts.total);
 
   return (
     <main className='max-w-7xl mx-auto p-6'>
@@ -51,6 +52,7 @@ export default async function PostGrid({
           labelName='포지션'
         />
         <SearchInput />
+        <ShowAllToggleButton />
       </div>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
         {posts.data.map((post) => {
@@ -61,8 +63,16 @@ export default async function PostGrid({
               key={post.id}
               className='bg-white border border-gray-200 shadow-sm rounded-xl p-4 space-y-2 relative'
             >
+              {post.expired && (
+                <div className='absolute inset-0 bg-black opacity-50 flex items-center justify-center z-10'>
+                  <span className='text-white text-xl font-bold'>
+                    모집 마감
+                  </span>
+                </div>
+              )}
+
               <Link href={`/study/${post.id}`}>
-                <div>
+                <div className='relative z-20'>
                   <div className='text-sm text-gray-500'>{post.category}</div>
                   <h2 className='text-lg font-semibold truncate text-black'>
                     {post.title}
@@ -96,8 +106,6 @@ export default async function PostGrid({
                   {isLiked ? "찜 취소" : "찜하기"}
                 </button>
               </form>
-
-              <></>
             </div>
           );
         })}

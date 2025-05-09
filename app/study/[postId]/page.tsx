@@ -1,27 +1,31 @@
 import {
   deletePost,
+  expirePost,
   getCommentsByPostId,
   getPostById,
   insertComment,
+  unexpirePost,
 } from "@/app/actions";
 import CommentDeleteButton from "@/components/CommentDeleteButton";
 import PostContent from "@/components/ui/register/PostContent";
 import { createClient } from "@/utils/supabase/server";
 
 type PostDetailPageProps = {
-  params: {
+  params: Promise<{
     postId: string;
-  };
+  }>;
 };
 
 const PostDetailPage = async ({ params }: PostDetailPageProps) => {
-  const supabase = await createClient();
+  const { postId } = await params;
 
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const post = await getPostById(params.postId);
-  const comments = await getCommentsByPostId(params.postId);
+
+  const post = await getPostById(postId);
+  const comments = await getCommentsByPostId(postId);
 
   if (!post) {
     return (
@@ -36,15 +40,27 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
   return (
     <div className='w-full max-w-screen-xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-md space-y-6 relative text-black'>
       {isAuthor && (
-        <form action={deletePost} className='absolute top-4 right-4'>
-          <input type='hidden' name='post_id' value={params.postId} />
-          <button
-            type='submit'
-            className='text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600'
-          >
-            삭제
-          </button>
-        </form>
+        <div className='flex gap-2 absolute top-4 right-4'>
+          <form action={deletePost}>
+            <input type='hidden' name='post_id' value={postId} />
+            <button
+              type='submit'
+              className='text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600'
+            >
+              삭제
+            </button>
+          </form>
+
+          <form action={!post.expired ? expirePost : unexpirePost}>
+            <input type='hidden' name='post_id' value={postId} />
+            <button
+              type='submit'
+              className='text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600'
+            >
+              {!post.expired ? "마감" : "마감 취소"}
+            </button>
+          </form>
+        </div>
       )}
 
       <h1 className='text-2xl font-bold'>{post.title}</h1>
@@ -99,7 +115,7 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
 
       {/* 💬 댓글 작성 */}
       <form action={insertComment} className='space-y-4 mt-8'>
-        <input type='hidden' name='post_id' value={params.postId} />
+        <input type='hidden' name='post_id' value={postId} />
         <textarea
           name='content'
           required
