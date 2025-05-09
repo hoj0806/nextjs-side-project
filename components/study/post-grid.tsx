@@ -29,7 +29,7 @@ export default async function PostGrid({
       searchParams.search,
       page,
       pageSize,
-      searchParams.showAll
+      searchParams.showAll // 추가가
     ),
     getMyLikes(),
   ]);

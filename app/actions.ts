@@ -341,9 +341,40 @@ export async function insertComment(formData: FormData) {
 
   if (error) {
     console.error("❌ 댓글 삽입 실패:", error.message);
+    return;
   } else {
     console.log("✅ 댓글 삽입 성공!");
   }
+
+  // 게시물 소유자에게 알림 삽입 (댓글이 달린 게시물의 작성자에게 알림)
+  const { data: postData, error: postError } = await supabase
+    .from("posts")
+    .select("user_id")
+    .eq("id", post_id)
+    .single(); // 게시물의 작성자 ID 가져오기
+
+  if (postError) {
+    console.error("❌ 게시물 작성자 정보 조회 실패:", postError.message);
+    return;
+  }
+
+  // 게시물 작성자와 댓글 작성자가 다른 경우에만 알림을 삽입
+  // if (postData?.user_id !== user.id) {
+  const { error: notificationError } = await supabase
+    .from("comment_notifications")
+    .insert({
+      user_id: postData?.user_id, // 게시물 작성자에게 알림
+      user_email: user.user_metadata.email, // 댓글 작성자의 이메일
+      post_id,
+      comment: content, // 댓글 내용
+    });
+
+  if (notificationError) {
+    console.error("❌ 알림 삽입 실패:", notificationError.message);
+  } else {
+    console.log("✅ 알림 삽입 성공!");
+  }
+  // }
 
   revalidatePath(`/study/${post_id}`);
 }
@@ -620,5 +651,59 @@ export async function unexpirePost(formData: FormData) {
   } else {
     console.log("✅ 게시글 expired false 설정 성공!");
     revalidatePath(`/study/${postId}`);
+  }
+}
+
+export async function getMyCommentNotifications() {
+  const supabase = await createClient();
+
+  // 현재 로그인된 유저 정보 가져오기
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return [];
+  }
+
+  // 로그인한 유저의 user_id와 일치하는 알람만 가져오기
+  const { data, error } = await supabase
+    .from("comment_notifications")
+    .select("*")
+    .eq("user_id", user.id) // 로그인한 유저가 수신자인 알람만
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("❌ 알림 조회 실패:", error.message);
+    return [];
+  }
+
+  return data;
+}
+
+export async function deleteCommentNotificationById(notificationId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  const { error } = await supabase
+    .from("comment_notifications")
+    .delete()
+    .eq("id", notificationId);
+
+  if (error) {
+    console.error("❌ 알림 삭제 실패:", error.message);
+  } else {
+    console.log("✅ 알림 삭제 성공!");
   }
 }
