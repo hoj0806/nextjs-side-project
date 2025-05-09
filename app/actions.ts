@@ -527,3 +527,90 @@ export async function deletePost(formData: FormData) {
   revalidatePath("/");
   redirect("/");
 }
+
+// 게시글 expired를 true로 설정
+export async function expirePost(postId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  // 게시글 소유자 확인
+  const { data: post, error: postError } = await supabase
+    .from("posts")
+    .select("user_id")
+    .eq("id", postId)
+    .single();
+
+  if (postError) {
+    console.error("❌ 게시글 조회 실패:", postError.message);
+    return;
+  }
+
+  if (post.user_id !== user.id) {
+    console.error("❌ 이 게시글의 만료 상태를 변경할 권한이 없습니다.");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("posts")
+    .update({ expired: true })
+    .eq("id", postId);
+
+  if (error) {
+    console.error("❌ 게시글 expired true 설정 실패:", error.message);
+  } else {
+    console.log("✅ 게시글 expired true 설정 성공!");
+    revalidatePath(`/study/${postId}`);
+  }
+}
+
+// 게시글 expired를 false로 설정
+export async function unexpirePost(postId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  const { data: post, error: postError } = await supabase
+    .from("posts")
+    .select("user_id")
+    .eq("id", postId)
+    .single();
+
+  if (postError) {
+    console.error("❌ 게시글 조회 실패:", postError.message);
+    return;
+  }
+
+  if (post.user_id !== user.id) {
+    console.error("❌ 이 게시글의 만료 상태를 변경할 권한이 없습니다.");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("posts")
+    .update({ expired: false })
+    .eq("id", postId);
+
+  if (error) {
+    console.error("❌ 게시글 expired false 설정 실패:", error.message);
+  } else {
+    console.log("✅ 게시글 expired false 설정 성공!");
+    revalidatePath(`/study/${postId}`);
+  }
+}

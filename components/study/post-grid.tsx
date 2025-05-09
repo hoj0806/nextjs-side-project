@@ -16,7 +16,7 @@ export default async function PostGrid({
     page?: string;
   };
 }) {
-  const pageSize = 1;
+  const pageSize = 2;
   const page = parseInt(searchParams.page || "1", 10);
 
   const [posts, likes] = await Promise.all([
@@ -31,8 +31,6 @@ export default async function PostGrid({
     getMyLikes(),
   ]);
   const likedPostIds = new Set(likes.map((like) => like.post_id));
-
-  console.log(posts.total);
 
   return (
     <main className='max-w-7xl mx-auto p-6'>
