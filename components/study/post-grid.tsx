@@ -35,7 +35,6 @@ export default async function PostGrid({
   ]);
   const likedPostIds = new Set(likes.map((like) => like.post_id));
 
-  console.log(123);
   return (
     <main className='max-w-7xl mx-auto p-6'>
       <h1 className='text-2xl font-bold mb-6'>모집 게시판</h1>
@@ -64,8 +63,16 @@ export default async function PostGrid({
               key={post.id}
               className='bg-white border border-gray-200 shadow-sm rounded-xl p-4 space-y-2 relative'
             >
+              {post.expired && (
+                <div className='absolute inset-0 bg-black opacity-50 flex items-center justify-center z-10'>
+                  <span className='text-white text-xl font-bold'>
+                    모집 마감
+                  </span>
+                </div>
+              )}
+
               <Link href={`/study/${post.id}`}>
-                <div>
+                <div className='relative z-20'>
                   <div className='text-sm text-gray-500'>{post.category}</div>
                   <h2 className='text-lg font-semibold truncate text-black'>
                     {post.title}
