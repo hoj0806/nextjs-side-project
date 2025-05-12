@@ -2,6 +2,7 @@
 
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import DropdownToggleButton from "./home/dropdown-toggle-button";
 
 // Tech Stack Data
 const techStacks = [
@@ -41,7 +42,7 @@ const techStacks = [
 type MultiSelectDropdownFilterProps = {
   paramsName: string;
   labelName: string;
-  data: any[]; // 데이터는 기술 스택 객체 배열
+  data: any[];
 };
 
 const MultiSelectDropdownFilter = ({
@@ -56,9 +57,8 @@ const MultiSelectDropdownFilter = ({
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<string>("popular"); // 기본 "인기" 탭
+  const [activeTab, setActiveTab] = useState<string>("popular");
 
-  // URL 파라미터를 초기 선택값으로 반영
   useEffect(() => {
     const initial = searchParams.get(paramsName);
     if (initial) {
@@ -134,16 +134,17 @@ const MultiSelectDropdownFilter = ({
   };
 
   return (
-    <div className='relative mb-6 w-full' ref={dropdownRef}>
-      <button
+    <div className='relative mb-6 w-[150px]' ref={dropdownRef}>
+      <DropdownToggleButton
+        label={
+          selectedValues.length > 0 ? selectedValues.join(", ") : labelName
+        }
         onClick={() => setIsOpen((prev) => !prev)}
-        className='w-full border border-gray-300 rounded px-3 py-2 text-sm text-left bg-white shadow-sm hover:border-gray-400'
-      >
-        {selectedValues.length > 0 ? selectedValues.join(", ") : labelName}
-      </button>
+        icon={true}
+      />
 
       {isOpen && (
-        <div className='absolute mt-1 w-full bg-white border border-gray-200 rounded shadow-md z-20 max-h-60 overflow-auto'>
+        <div className='absolute mt-1 w-[1000px] bg-white border border-gray-200 rounded shadow-md z-20 max-h-60 overflow-auto'>
           {/* 탭 */}
           <div className='flex'>
             {["popular", "frontend", "backend", "mobile", "etc", "all"].map(
