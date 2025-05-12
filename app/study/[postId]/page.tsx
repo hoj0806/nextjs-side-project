@@ -1,14 +1,13 @@
-import {
-  deletePost,
-  expirePost,
-  getCommentsByPostId,
-  getPostById,
-  insertComment,
-  unexpirePost,
-} from "@/app/actions";
+import { getCommentsByPostId, getPostById, insertComment } from "@/app/actions";
 import CommentDeleteButton from "@/components/CommentDeleteButton";
+import CommentForm from "@/components/study/comment-form";
+import CommentList from "@/components/study/comment-list";
+import BackButton from "@/components/ui/register/back-button";
+import PostActionButtons from "@/components/ui/register/post-actions-button";
+import PostDescriptionLabel from "@/components/ui/register/post-description-label";
 import PostContent from "@/components/ui/register/PostContent";
 import { createClient } from "@/utils/supabase/server";
+import Image from "next/image";
 
 type PostDetailPageProps = {
   params: Promise<{
@@ -24,8 +23,10 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const post = await getPostById(postId);
-  const comments = await getCommentsByPostId(postId);
+  const [post, comments] = await Promise.all([
+    getPostById(postId),
+    getCommentsByPostId(postId),
+  ]);
 
   if (!post) {
     return (
@@ -38,125 +39,86 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
   const isAuthor = user?.id === post.user_id;
 
   return (
-    <div className='w-full max-w-screen-xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-md space-y-6 relative text-black'>
-      {isAuthor && (
-        <div className='flex gap-2 absolute top-4 right-4'>
-          <form action={deletePost}>
-            <input type='hidden' name='post_id' value={postId} />
-            <button
-              type='submit'
-              className='text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600'
-            >
-              삭제
-            </button>
-          </form>
+    <section className='w-[852px] max-w-screen-xl mx-auto mt-10 bg-white space-y-6 relative text-black'>
+      <BackButton />
 
-          <form action={!post.expired ? expirePost : unexpirePost}>
-            <input type='hidden' name='post_id' value={postId} />
-            <button
-              type='submit'
-              className='text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600'
-            >
-              {!post.expired ? "마감" : "마감 취소"}
-            </button>
-          </form>
-        </div>
+      {isAuthor && (
+        <PostActionButtons
+          postId={postId}
+          expired={post.expired}
+          isAuthor={isAuthor}
+        />
       )}
 
-      <h1 className='text-2xl font-bold'>{post.title}</h1>
-
-      <PostContent content={post.content} />
+      <div className='border-b-2 border-b-gray-200 pb-[32px]'>
+        <h1 className='text-3xl font-bold'>{post.title}</h1>
+        {/* 유저 닉네임 표시 되도록 */}
+        <p className='text-gray-500 text-md font-semibold'>
+          {post.deadline.split("-").join(".")}
+        </p>
+      </div>
 
       <div className='grid grid-cols-2 gap-4 text-sm text-gray-600'>
-        <div>
-          <strong>모집 구분:</strong> {post.category}
-        </div>
-        <div>
-          <strong>모집 인원:</strong> {post.recruitment_count}
-        </div>
-        <div>
-          <strong>진행 방식:</strong> {post.mode}
-        </div>
-        <div>
-          <strong>진행 기간:</strong> {post.duration}
-        </div>
-        <div>
-          <strong>마감일:</strong> {post.deadline}
-        </div>
-        <div>
-          <strong>연락 방법:</strong> {post.contact_method}
-        </div>
-        <div className='col-span-2'>
-          <strong>연락 링크:</strong>
+        <PostDescriptionLabel label='모집 구분'>
+          {post.category}
+        </PostDescriptionLabel>
+        <PostDescriptionLabel label='진행 방식'>
+          {post.mode}
+        </PostDescriptionLabel>
+        <PostDescriptionLabel label='모집 인원'>
+          {post.recruitment_count}
+        </PostDescriptionLabel>
+        <PostDescriptionLabel label='시작 예정'>
+          {post.deadline}
+        </PostDescriptionLabel>
+        <PostDescriptionLabel label='연락 방법'>
           <a
             href={post.contact_link}
             className='text-blue-600 underline break-all'
             target='_blank'
           >
-            {post.contact_link}
+            {post.contact_method}
           </a>
-        </div>
+        </PostDescriptionLabel>
+        <PostDescriptionLabel label='예상 기간'>
+          {post.duration}
+        </PostDescriptionLabel>
+        <PostDescriptionLabel label='모집 분야'>
+          <ul className='flex gap-2'>
+            {post.positions.map((position: string) => {
+              return <li key={position}>{position}</li>;
+            })}
+          </ul>
+        </PostDescriptionLabel>
+        <PostDescriptionLabel label='기술 스택'>
+          <ul className='flex gap-2'>
+            {post.tech_stack.map((stack: string) => {
+              return (
+                <li key={stack}>
+                  <Image
+                    src={`/images/languages/${stack}.png`}
+                    width={32}
+                    height={32}
+                    alt={stack}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </PostDescriptionLabel>
       </div>
 
-      <div className='space-y-2'>
-        <div>
-          <strong>기술 스택:</strong>
-          <span className='text-sm text-gray-800'>
-            {post.tech_stack?.join(", ")}
-          </span>
-        </div>
-        <div>
-          <strong>모집 포지션:</strong>
-          <span className='text-sm text-gray-800'>
-            {post.positions?.join(", ")}
-          </span>
-        </div>
+      <div className='border-b-gray-300 border-b-2 pb-10'>
+        <h2 className='text-xl font-bold'>프로젝트 소개</h2>
       </div>
+      <PostContent content={post.content} />
 
       {/* 💬 댓글 작성 */}
-      <form action={insertComment} className='space-y-4 mt-8'>
-        <input type='hidden' name='post_id' value={postId} />
-        <textarea
-          name='content'
-          required
-          className='w-full border p-2 rounded resize-none'
-          placeholder='댓글을 입력하세요'
-        />
-        <button
-          type='submit'
-          className='bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700'
-        >
-          댓글 작성
-        </button>
-      </form>
+      <CommentForm postId={postId} commentCount={comments.length} />
 
       {/* 💬 댓글 목록 */}
-      <div className='mt-6 space-y-4'>
-        <h2 className='text-lg font-semibold'>댓글 {comments.length}개</h2>
-        {comments.length === 0 ? (
-          <p className='text-gray-500'>아직 댓글이 없습니다.</p>
-        ) : (
-          comments.map((comment) => (
-            <div
-              key={comment.id}
-              className='p-4 border rounded bg-gray-50 text-sm'
-            >
-              <div className='text-gray-800 whitespace-pre-wrap'>
-                {comment.content}
-              </div>
-              <div className='text-gray-500 text-xs mt-2'>
-                작성자: {comment.email ?? "알 수 없음"} ·{" "}
-                {new Date(comment.created_at).toLocaleString()}
-              </div>
-              {/* 댓글 삭제 버튼 추가 */}
-              <div className='mt-2'>
-                <CommentDeleteButton commentId={comment.id} />
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
+      <CommentList comments={comments} />
+    </section>
   );
 };
 
