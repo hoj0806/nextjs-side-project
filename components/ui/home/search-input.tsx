@@ -21,12 +21,12 @@ const SearchInput = () => {
   };
 
   return (
-    <div className='mb-4 flex gap-2'>
+    <div className='mb-4 flex gap-2 w-[200px]'>
       <input
         type='text'
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder='검색어 입력'
+        placeholder='제목,글 내용을 입력해보세요'
         className='w-full p-2 border border-gray-300 rounded-md'
       />
       <button

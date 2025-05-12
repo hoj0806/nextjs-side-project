@@ -1,4 +1,4 @@
-import PostGrid from "@/components/study/post-grid";
+import Main from "@/components/home/main";
 
 export default async function Home({
   searchParams,
@@ -14,8 +14,7 @@ export default async function Home({
     tech_stack?: string;
   }>;
 }) {
-  // searchParams를 비동기적으로 처리하여 params에 할당
   const params = await searchParams;
 
-  return <PostGrid searchParams={params} />;
+  return <Main searchParams={params} />;
 }
