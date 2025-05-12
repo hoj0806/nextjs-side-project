@@ -9,6 +9,7 @@ import PositionBox from "./position-box";
 import StackBox from "./stack-box";
 import NewPostBadge from "./new-post-badge";
 import DeadlineBadge from "./deadline-badge";
+import PostInfo from "./post-info";
 
 type Post = {
   id: number;
@@ -21,6 +22,7 @@ type Post = {
   positions: string[];
   created_at: string;
   tech_stack: string[];
+  view: number;
 };
 
 type PostItemProps = {
@@ -53,6 +55,7 @@ export default function PostItem({ post, isLiked }: PostItemProps) {
           </h2>
           <PositionBox positions={post.positions} />
           <StackBox stacks={post.tech_stack} />
+          <PostInfo view={post.view} />
         </div>
       </Link>
 

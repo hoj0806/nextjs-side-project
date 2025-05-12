@@ -819,3 +819,31 @@ export async function getMyReadData() {
   // post_id만 반환
   return readPosts || [];
 }
+
+export async function increaseView(postId: string) {
+  const supabase = await createClient();
+
+  // 1. 현재 view 값 가져오기
+  const { data, error: fetchError } = await supabase
+    .from("posts")
+    .select("view")
+    .eq("id", postId)
+    .single();
+
+  if (fetchError || !data) {
+    console.error("조회수 가져오기 실패:", fetchError?.message);
+    return;
+  }
+
+  const currentView = data.view ?? 0;
+
+  // 2. view + 1로 업데이트
+  const { error: updateError } = await supabase
+    .from("posts")
+    .update({ view: currentView + 1 })
+    .eq("id", postId);
+
+  if (updateError) {
+    console.error("조회수 업데이트 실패:", updateError.message);
+  }
+}
