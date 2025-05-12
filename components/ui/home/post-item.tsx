@@ -7,6 +7,9 @@ import ExpiredLayer from "./expired-layer";
 import CategoryBadge from "./category-badge";
 import PositionBox from "./position-box";
 import StackBox from "./stack-box";
+import NewPostBadge from "./new-post-badge";
+import DeadlineBadge from "./deadline-badge";
+import PostInfo from "./post-info";
 
 type Post = {
   id: number;
@@ -17,7 +20,10 @@ type Post = {
   deadline: string;
   expired: boolean;
   positions: string[];
+  created_at: string;
   tech_stack: string[];
+  view: number;
+  commentCount: number;
 };
 
 type PostItemProps = {
@@ -26,12 +32,22 @@ type PostItemProps = {
 };
 
 export default function PostItem({ post, isLiked }: PostItemProps) {
+  const now = new Date();
+  const isNewPost =
+    new Date().getTime() - new Date(post.created_at).getTime() <
+    24 * 60 * 60 * 1000;
+  const deadlineDate = new Date(post.deadline + "T23:59:59");
+  const isDeadlineSoon =
+    deadlineDate.getTime() - now.getTime() < 3 * 24 * 60 * 60 * 1000;
   return (
     <div className='bg-white border border-gray-400 shadow-sm rounded-3xl p-4 space-y-2 relative h-[300px]'>
       {post.expired && <ExpiredLayer />}
       <Link href={`/study/${post.id}`}>
         <div className='relative z-20'>
           <CategoryBadge category={post.category} />
+          {isNewPost && <NewPostBadge />}
+          {!post.expired && !isNewPost && isDeadlineSoon && <DeadlineBadge />}
+
           <div className='text-xs text-gray-400'>
             마감일 | {post.deadline.split("-").join(".")}
           </div>
@@ -40,6 +56,7 @@ export default function PostItem({ post, isLiked }: PostItemProps) {
           </h2>
           <PositionBox positions={post.positions} />
           <StackBox stacks={post.tech_stack} />
+          <PostInfo view={post.view} commentCount={post.commentCount} />
         </div>
       </Link>
 

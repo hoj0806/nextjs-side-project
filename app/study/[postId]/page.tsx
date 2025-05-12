@@ -1,6 +1,7 @@
 import {
   getCommentsByPostId,
   getPostById,
+  increaseView,
   markPostAsRead,
 } from "@/app/actions";
 import CommentDeleteButton from "@/components/CommentDeleteButton";
@@ -31,6 +32,8 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
     getPostById(postId),
     getCommentsByPostId(postId),
   ]);
+
+  await increaseView(postId);
 
   if (!post) {
     return (

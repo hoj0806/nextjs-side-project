@@ -11,7 +11,10 @@ type Post = {
   deadline: string;
   expired: boolean;
   positions: string[];
+  created_at: string;
   tech_stack: string[];
+  view: number;
+  commentCount: number;
 };
 
 type PostGridProps = {
@@ -20,6 +23,7 @@ type PostGridProps = {
 };
 
 export default function PostGrid({ posts, likedPostIds }: PostGridProps) {
+  console.log(posts);
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
       {posts.map((post) => {
