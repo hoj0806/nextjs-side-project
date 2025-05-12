@@ -340,6 +340,29 @@ export async function getMyLikesPosts(postIds: string[]) {
 
   return data;
 }
+
+export async function getMyReadPosts(postIds: string[]) {
+  const supabase = await createClient();
+  let query = supabase
+    .from("posts")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  // postIds가 주어졌다면 필터링 쿼리 추가
+  if (postIds && postIds.length > 0) {
+    query = query.in("id", postIds);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("게시글 조회 실패:", error.message);
+    return [];
+  }
+
+  return data;
+}
+
 // 댓글 삽입 함수
 export async function insertComment(formData: FormData) {
   const supabase = await createClient();
@@ -736,4 +759,64 @@ export async function deleteCommentNotificationById(notificationId: string) {
   } else {
     console.log("✅ 알림 삭제 성공!");
   }
+}
+
+export async function markPostAsRead(postId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  if (!postId) {
+    console.error("❌ postId가 제공되지 않았습니다.");
+    return;
+  }
+
+  const { error: upsertError } = await supabase.from("read_posts").upsert(
+    {
+      user_id: user.id,
+      post_id: postId,
+    },
+    { onConflict: "user_id,post_id" } // 복합 유니크 키 기준
+  );
+
+  if (upsertError) {
+    console.error("❌ 읽은 게시물 기록 실패:", upsertError.message);
+  } else {
+    console.log("✅ 읽은 게시물 기록 성공!");
+  }
+}
+
+export async function getMyReadData() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("❌ 로그인된 유저가 없습니다:", userError?.message);
+    return [];
+  }
+
+  const { data: readPosts, error: fetchError } = await supabase
+    .from("read_posts")
+    .select("post_id") // 원하는 데이터만 선택
+    .eq("user_id", user.id); // 로그인한 사용자의 읽은 게시물만 조회
+
+  if (fetchError) {
+    console.error("❌ 읽은 게시물 조회 실패:", fetchError.message);
+    return [];
+  }
+
+  // post_id만 반환
+  return readPosts || [];
 }

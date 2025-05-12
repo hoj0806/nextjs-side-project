@@ -22,11 +22,10 @@ type Post = {
 
 type PostItemProps = {
   post: Post;
-  isLiked: boolean;
+  isLiked?: boolean;
 };
 
 export default function PostItem({ post, isLiked }: PostItemProps) {
-  console.log(post.tech_stack);
   return (
     <div className='bg-white border border-gray-400 shadow-sm rounded-3xl p-4 space-y-2 relative h-[300px]'>
       {post.expired && <ExpiredLayer />}
@@ -44,22 +43,24 @@ export default function PostItem({ post, isLiked }: PostItemProps) {
         </div>
       </Link>
 
-      <form
-        action={isLiked ? unlikePost : likePost}
-        className='absolute top-2 right-2'
-      >
-        <input type='hidden' name='post_id' value={post.id} />
-        <button
-          type='submit'
-          className={`text-sm px-2 py-1 rounded ${
-            isLiked
-              ? "bg-red-100 text-red-600 hover:bg-red-200"
-              : "bg-purple-100 text-purple-600 hover:bg-purple-200"
-          }`}
+      {isLiked !== undefined && (
+        <form
+          action={isLiked ? unlikePost : likePost}
+          className='absolute top-2 right-2'
         >
-          {isLiked ? "찜 취소" : "찜하기"}
-        </button>
-      </form>
+          <input type='hidden' name='post_id' value={post.id} />
+          <button
+            type='submit'
+            className={`text-sm px-2 py-1 rounded ${
+              isLiked
+                ? "bg-red-100 text-red-600 hover:bg-red-200"
+                : "bg-purple-100 text-purple-600 hover:bg-purple-200"
+            }`}
+          >
+            {isLiked ? "찜 취소" : "찜하기"}
+          </button>
+        </form>
+      )}
     </div>
   );
 }
