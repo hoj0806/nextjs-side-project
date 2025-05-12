@@ -1,4 +1,8 @@
-import { getCommentsByPostId, getPostById, insertComment } from "@/app/actions";
+import {
+  getCommentsByPostId,
+  getPostById,
+  markPostAsRead,
+} from "@/app/actions";
 import CommentDeleteButton from "@/components/CommentDeleteButton";
 import CommentForm from "@/components/study/comment-form";
 import CommentList from "@/components/study/comment-list";
@@ -17,7 +21,7 @@ type PostDetailPageProps = {
 
 const PostDetailPage = async ({ params }: PostDetailPageProps) => {
   const { postId } = await params;
-
+  await markPostAsRead(postId);
   const supabase = await createClient();
   const {
     data: { user },
