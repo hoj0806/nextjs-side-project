@@ -11,6 +11,7 @@ export default async function Home({
     page?: string;
     expired?: string;
     showAll?: string;
+    tech_stack?: string;
   }>;
 }) {
   // searchParams를 비동기적으로 처리하여 params에 할당

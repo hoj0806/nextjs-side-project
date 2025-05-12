@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { getMyLikes, getPosts, unlikePost } from "../actions";
+import { getMyLikes, getMyLikesPosts, getPosts, unlikePost } from "../actions";
 
 const MyLikesPage = async () => {
   const likes = await getMyLikes();
+  console.log(likes);
   const postIds = likes.map((like) => like.post_id);
-  const likedPosts = postIds.length > 0 ? await getPosts(postIds) : [];
-
+  const likedPosts = postIds.length > 0 ? await getMyLikesPosts(postIds) : [];
   return (
     <main className='max-w-7xl mx-auto p-6'>
       <h1 className='text-2xl font-bold mb-6'>내 관심 게시물</h1>

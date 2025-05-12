@@ -5,6 +5,8 @@ import DropdownFilter from "../ui/dropdown-filter";
 import SearchInput from "../ui/search-input";
 import Pagination from "../ui/pagination";
 import ShowAllToggleButton from "../ui/showAll-toggle-button";
+import MultiSelectDropdownFilter from "../ui/multi-select-dropdown-filter";
+import { techStacks } from "@/lib/techStack";
 
 export default async function PostGrid({
   searchParams,
@@ -16,10 +18,14 @@ export default async function PostGrid({
     search?: string;
     page?: string;
     showAll?: string;
+    tech_stack?: string;
   };
 }) {
   const pageSize = 2;
   const page = parseInt(searchParams.page || "1", 10);
+  const techStackArray = searchParams.tech_stack
+    ? searchParams.tech_stack.split(",")
+    : [];
 
   const [posts, likes] = await Promise.all([
     getPosts(
@@ -27,20 +33,26 @@ export default async function PostGrid({
       searchParams.mode,
       searchParams.position,
       searchParams.search,
+      techStackArray,
       page,
       pageSize,
       searchParams.showAll // 추가가
     ),
     getMyLikes(),
   ]);
+  console.log(searchParams.tech_stack);
   const likedPostIds = new Set(likes.map((like) => like.post_id));
-
   return (
     <main className='max-w-7xl mx-auto p-6'>
       <h1 className='text-2xl font-bold mb-6'>모집 게시판</h1>
       <Pagination total={posts.total} pageSize={pageSize} />
       <CategoryFilter />
       <div className='flex gap-4'>
+        <MultiSelectDropdownFilter
+          paramsName='tech_stack'
+          labelName='카테고리 선택'
+          data={techStacks}
+        />
         <DropdownFilter
           paramsName='mode'
           data={["전체", "온라인", "오프라인", "온/오프라인"]}

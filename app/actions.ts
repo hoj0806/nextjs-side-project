@@ -164,7 +164,7 @@ export async function handleRegister(formData: FormData): Promise<void> {
 
   // FormData 값 꺼내기
   const data = Object.fromEntries(formData.entries());
-  const tech_stack = formData.getAll("tech_stack"); // 배열로 받기
+  let tech_stack = formData.getAll("tech_stack"); // 배열로 받기
   const positions = formData.getAll("positions");
 
   const {
@@ -179,6 +179,9 @@ export async function handleRegister(formData: FormData): Promise<void> {
     content,
   } = data;
 
+  tech_stack = tech_stack
+    .filter((tech) => typeof tech === "string") // 필터링하여 문자열만 처리
+    .map((tech: string) => tech.trim().toLowerCase());
   // 현재 로그인한 유저 정보 가져오기
   const {
     data: { user },
@@ -218,9 +221,10 @@ export async function getPosts(
   modeParams?: string,
   positionParams?: string,
   searchQuery?: string,
+  techStackParams?: string[], // tech_stack 파라미터를 배열로 받도록 추가
   page: number = 1,
   pageSize: number = 1,
-  showAll?: string // ✅ 바뀐 이름
+  showAll?: string
 ) {
   const supabase = await createClient();
   let query = supabase
@@ -246,9 +250,14 @@ export async function getPosts(
     );
   }
 
-  // ✅ showAll이 아닌 경우엔 모집중인 게시물만
+  // showAll이 "true"가 아닌 경우에는 모집중인 게시물만 필터링
   if (showAll !== "true") {
     query = query.eq("expired", false);
+  }
+
+  // techStackParams가 있으면, tech_stack 배열에 해당 값들이 하나라도 포함되는 게시물만 필터링
+  if (techStackParams && techStackParams.length > 0) {
+    query = query.contains("tech_stack", techStackParams); // tech_stack 배열에 값이 포함된 게시물만 가져오기
   }
 
   const from = (page - 1) * pageSize;
@@ -310,6 +319,27 @@ export async function getMyPosts() {
   return data;
 }
 
+export async function getMyLikesPosts(postIds: string[]) {
+  const supabase = await createClient();
+  let query = supabase
+    .from("posts")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  // postIds가 주어졌다면 필터링 쿼리 추가
+  if (postIds && postIds.length > 0) {
+    query = query.in("id", postIds);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("게시글 조회 실패:", error.message);
+    return [];
+  }
+
+  return data;
+}
 // 댓글 삽입 함수
 export async function insertComment(formData: FormData) {
   const supabase = await createClient();
