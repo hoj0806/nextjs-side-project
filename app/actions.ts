@@ -348,7 +348,6 @@ export async function getMyReadPosts(postIds: string[]) {
     .select("*")
     .order("created_at", { ascending: false });
 
-  // postIds가 주어졌다면 필터링 쿼리 추가
   if (postIds && postIds.length > 0) {
     query = query.in("id", postIds);
   }

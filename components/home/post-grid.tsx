@@ -11,6 +11,7 @@ type Post = {
   deadline: string;
   expired: boolean;
   positions: string[];
+  created_at: string;
   tech_stack: string[];
 };
 
