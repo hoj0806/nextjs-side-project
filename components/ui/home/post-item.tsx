@@ -23,6 +23,7 @@ type Post = {
   created_at: string;
   tech_stack: string[];
   view: number;
+  commentCount: number;
 };
 
 type PostItemProps = {
@@ -55,7 +56,7 @@ export default function PostItem({ post, isLiked }: PostItemProps) {
           </h2>
           <PositionBox positions={post.positions} />
           <StackBox stacks={post.tech_stack} />
-          <PostInfo view={post.view} />
+          <PostInfo view={post.view} commentCount={post.commentCount} />
         </div>
       </Link>
 

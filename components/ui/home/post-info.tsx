@@ -1,5 +1,16 @@
-const PostInfo = ({ view }: { view: number }) => {
-  return <div>댓글 수 : {view}</div>;
+const PostInfo = ({
+  view,
+  commentCount,
+}: {
+  view: number;
+  commentCount: number;
+}) => {
+  return (
+    <div>
+      <span>조회 수 : {view}</span>
+      <span>댓글 수 : {commentCount}</span>
+    </div>
+  );
 };
 
 export default PostInfo;

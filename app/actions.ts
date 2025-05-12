@@ -250,14 +250,12 @@ export async function getPosts(
     );
   }
 
-  // showAll이 "true"가 아닌 경우에는 모집중인 게시물만 필터링
   if (showAll !== "true") {
     query = query.eq("expired", false);
   }
 
-  // techStackParams가 있으면, tech_stack 배열에 해당 값들이 하나라도 포함되는 게시물만 필터링
   if (techStackParams && techStackParams.length > 0) {
-    query = query.contains("tech_stack", techStackParams); // tech_stack 배열에 값이 포함된 게시물만 가져오기
+    query = query.contains("tech_stack", techStackParams);
   }
 
   const from = (page - 1) * pageSize;
@@ -270,7 +268,26 @@ export async function getPosts(
     return { data: [], total: 0 };
   }
 
-  return { data, total: count ?? 0 };
+  // 댓글 수 추가: 각 게시물에 댓글 수를 추가
+  const postsWithCommentCount = await Promise.all(
+    data.map(async (post) => {
+      const { count: commentCount, error: commentError } = await supabase
+        .from("comments")
+        .select("*", { count: "exact", head: true })
+        .eq("post_id", post.id);
+
+      if (commentError) {
+        console.error("댓글 수 조회 실패:", commentError);
+      }
+
+      return {
+        ...post,
+        commentCount: commentCount ?? 0, // 댓글 수 추가
+      };
+    })
+  );
+
+  return { data: postsWithCommentCount, total: count ?? 0 };
 }
 
 export async function getPostById(id: string) {
