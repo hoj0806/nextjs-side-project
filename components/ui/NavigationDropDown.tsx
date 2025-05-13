@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { signOutAction } from "@/app/actions";
+import { signOutAction } from "@/app/actions/auth-actions";
 
 const NavigationDropDown = () => {
   const [open, setOpen] = useState(false);

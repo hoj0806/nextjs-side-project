@@ -1,10 +1,6 @@
-import {
-  getCommentsByPostId,
-  getPostById,
-  increaseView,
-  markPostAsRead,
-} from "@/app/actions";
-import CommentDeleteButton from "@/components/CommentDeleteButton";
+import { increaseView, markPostAsRead } from "@/app/actions/post-actions";
+import { getCommentsByPostId } from "@/app/actions/comment-actions";
+import { getPostById } from "@/app/actions/post-actions";
 import CommentForm from "@/components/study/comment-form";
 import CommentList from "@/components/study/comment-list";
 import BackButton from "@/components/ui/register/back-button";

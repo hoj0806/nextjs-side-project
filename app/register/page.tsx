@@ -1,7 +1,7 @@
 import CustomSelect from "@/components/ui/register/SelectInput.";
-import { handleRegister } from "../actions";
 import MultiSelect from "@/components/ui/register/MultipleSelect";
 import Editor from "@/components/ui/register/Editor";
+import { handleRegister } from "../actions/post-actions";
 
 const RegisterPage = () => {
   return (

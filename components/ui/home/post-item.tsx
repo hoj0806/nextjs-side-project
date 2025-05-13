@@ -1,8 +1,7 @@
-// components/ui/home/PostItem.tsx
 "use client";
 
 import Link from "next/link";
-import { likePost, unlikePost } from "@/app/actions";
+import { likePost, unlikePost } from "@/app/actions/like-actions";
 import ExpiredLayer from "./expired-layer";
 import CategoryBadge from "./category-badge";
 import PositionBox from "./position-box";

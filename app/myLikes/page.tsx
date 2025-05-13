@@ -1,14 +1,10 @@
 // app/mypage/page.tsx
-import {
-  getMyLikes,
-  getMyLikesPosts,
-  getMyReadData,
-  getMyReadPosts,
-} from "../actions";
+import { getMyReadData } from "../actions/post-actions";
+import { getMyLikes } from "../actions/like-actions";
 import PostGrid from "@/components/home/post-grid";
 import MyPostGrid from "@/components/myPosts/MyPostGrid";
 import Link from "next/link";
-
+import { getMyLikesPosts, getMyReadPosts } from "../actions/post-actions";
 type Props = {
   searchParams: {
     tab?: string;
