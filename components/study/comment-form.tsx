@@ -1,4 +1,4 @@
-import { insertComment } from "@/app/actions";
+import { insertComment } from "@/app/actions/comment-actions";
 
 type CommentFormProps = {
   postId: string;

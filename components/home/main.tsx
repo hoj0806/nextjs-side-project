@@ -1,4 +1,5 @@
-import { getPosts, getMyLikes } from "../../app/actions";
+import { getMyLikes } from "@/app/actions/like-actions";
+import { getPosts } from "@/app/actions/post-actions";
 import CategoryFilter from "../ui/home/categoryFilter";
 import Pagination from "../ui/pagination";
 import SearchFilterBar from "./search-filter-bar";

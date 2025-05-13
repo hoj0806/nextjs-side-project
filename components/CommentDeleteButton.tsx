@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { deleteComment } from "@/app/actions";
+import { deleteComment } from "@/app/actions/comment-actions";
 
 type CommentDeleteButtonProps = {
   commentId: string;

@@ -1,4 +1,8 @@
-import { deletePost, expirePost, unexpirePost } from "@/app/actions";
+import {
+  deletePost,
+  expirePost,
+  unexpirePost,
+} from "@/app/actions/post-actions";
 
 type PostActionButtonsProps = {
   postId: string;

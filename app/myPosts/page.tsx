@@ -1,5 +1,5 @@
-import { getMyPosts } from "../actions";
 import MyPostGrid from "@/components/myPosts/MyPostGrid";
+import { getMyPosts } from "../actions/post-actions";
 
 const MyPostsPage = async () => {
   const myPosts = await getMyPosts();

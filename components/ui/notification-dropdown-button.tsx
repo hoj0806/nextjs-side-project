@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   getMyCommentNotifications,
   deleteCommentNotificationById,
-} from "@/app/actions";
+} from "@/app/actions/notification.actions";
 
 export default function NotificationDropdown() {
   const [open, setOpen] = useState(false);
