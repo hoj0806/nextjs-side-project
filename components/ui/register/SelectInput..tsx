@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type CustomSelectProps = {
   name: string;
   label: string;
   placeholder: string;
   options: string[];
+  defaultValue?: string; // ✅ 추가
 };
 
 export default function CustomSelect({
@@ -14,9 +15,17 @@ export default function CustomSelect({
   label,
   placeholder,
   options,
+  defaultValue,
 }: CustomSelectProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+
+  // ✅ defaultValue가 있으면 초기 선택값으로 설정
+  useEffect(() => {
+    if (defaultValue) {
+      setSelected(defaultValue);
+    }
+  }, [defaultValue]);
 
   return (
     <div>
@@ -36,7 +45,9 @@ export default function CustomSelect({
             {options.map((option) => (
               <div
                 key={option}
-                className='p-2 hover:bg-purple-100 cursor-pointer'
+                className={`p-2 hover:bg-purple-100 cursor-pointer ${
+                  selected === option ? "bg-purple-100 font-semibold" : ""
+                }`}
                 onClick={() => {
                   setSelected(option);
                   setOpen(false);
