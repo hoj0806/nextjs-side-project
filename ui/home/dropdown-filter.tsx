@@ -3,6 +3,7 @@
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import DropdownToggleButton from "./dropdown-toggle-button";
+import DropdownMenu from "./dropdown-menu";
 
 type DropdownFilterProps = {
   paramsName: string;
@@ -60,26 +61,14 @@ const DropdownFilter = ({
   };
 
   return (
-    <div className='relative mb-6 w-[150px]' ref={dropdownRef}>
+    <div className='relative w-[150px]' ref={dropdownRef}>
       <DropdownToggleButton
         label={currentValue || labelName}
         onClick={() => setIsOpen((prev) => !prev)}
         icon={true}
       />
 
-      {isOpen && (
-        <div className='absolute mt-1 w-full bg-white border border-gray-200 rounded shadow-md z-10 flex flex-col'>
-          {data.map((item) => (
-            <button
-              key={item}
-              onClick={() => handleSelect(item)}
-              className='px-3 py-2 text-sm text-left hover:bg-gray-100 transition-colors'
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      )}
+      {isOpen && <DropdownMenu data={data} handleSelect={handleSelect} />}
     </div>
   );
 };

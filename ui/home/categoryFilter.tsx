@@ -8,7 +8,7 @@ const CategoryFilter = () => {
   const currentCategory = searchParams.get("category");
 
   return (
-    <div className='flex gap-6 mb-6'>
+    <div className='flex gap-8 mb-8'>
       <CategoryLink
         value={null}
         label='전체'

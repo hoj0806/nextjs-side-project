@@ -1,6 +1,6 @@
-import CustomSelect from "../ui/register/SelectInput.";
-import MultiSelect from "@/components/ui/register/MultipleSelect";
-import Editor from "@/components/ui/register/Editor";
+import CustomSelect from "../../ui/register/SelectInput.";
+import MultiSelect from "@/ui/register/MultipleSelect";
+import Editor from "@/ui/register/Editor";
 
 type PostFormProps = {
   action: (formData: FormData) => void | Promise<void>;

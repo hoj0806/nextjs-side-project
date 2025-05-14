@@ -37,7 +37,7 @@ const ShowAllToggleButton = () => {
   const isActive = showAll !== "true";
 
   return (
-    <div className='relative mb-6 w-[150px]'>
+    <div className='relative'>
       <DropdownToggleButton
         label='👀 모집 중만 보기'
         onClick={handleToggle}

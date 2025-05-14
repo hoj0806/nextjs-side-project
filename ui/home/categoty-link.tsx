@@ -36,7 +36,7 @@ export default function CategoryLink({
   return (
     <Link
       href={href}
-      className={`font-bold text-2xl ${isActive ? "text-black" : "text-gray-400"}`}
+      className={`font-bold text-xl ${isActive ? "text-black" : "text-gray-400"}`}
     >
       {label}
     </Link>
