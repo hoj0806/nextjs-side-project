@@ -12,7 +12,7 @@ export default function RootLayout({
         <main className='min-h-screen flex flex-col items-center'>
           <div className='w-full max-w-screen-xl'>
             <Navigation />
-            <div className='p-5'>{children}</div>
+            <div>{children}</div>
           </div>
         </main>
       </body>
