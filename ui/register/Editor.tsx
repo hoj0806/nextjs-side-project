@@ -27,7 +27,12 @@ const Editor: React.FC<EditorProps> = ({ name, defaultValue }) => {
 
   return (
     <div>
-      <MDEditor value={value} onChange={handleChange} />
+      <MDEditor
+        value={value}
+        onChange={handleChange}
+        preview='edit'
+        style={{ minHeight: "600px" }} // 높이 설정
+      />
       <input type='hidden' name={name} value={value} />
     </div>
   );
