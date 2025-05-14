@@ -39,13 +39,11 @@ export default function NotificationDropdown() {
   };
 
   return (
-    <div className='relative inline-block text-left'>
+    <>
       {/* 알람 버튼 */}
-      <button
-        onClick={() => setOpen((prev) => !prev)}
-        className='relative px-4 py-2 text-sm font-medium bg-purple-600 text-white rounded hover:bg-purple-700 transition'
-      >
-        알람
+      <button onClick={() => setOpen((prev) => !prev)} className='relative'>
+        <img src='/icons/notification.svg' />
+
         {unreadCount > 0 && (
           <span className='absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full'>
             {unreadCount > 9 ? "9+" : unreadCount}
@@ -91,6 +89,6 @@ export default function NotificationDropdown() {
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }

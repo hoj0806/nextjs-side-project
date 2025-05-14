@@ -1,6 +1,6 @@
 "use client";
 
-import PostItem from "../ui/home/post-item";
+import PostItem from "../../ui/home/post-item";
 
 type Post = {
   id: number;
@@ -23,7 +23,6 @@ type PostGridProps = {
 };
 
 export default function PostGrid({ posts, likedPostIds }: PostGridProps) {
-  console.log(posts);
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
       {posts.map((post) => {

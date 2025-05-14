@@ -1,4 +1,3 @@
-// app/mypage/page.tsx
 import { getMyReadData } from "../actions/post-actions";
 import { getMyLikes } from "../actions/like-actions";
 import PostGrid from "@/components/home/post-grid";

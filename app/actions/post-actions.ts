@@ -133,7 +133,7 @@ export async function getPosts(
   searchQuery?: string,
   techStackParams?: string[], // tech_stack 파라미터를 배열로 받도록 추가
   page: number = 1,
-  pageSize: number = 1,
+  pageSize: number = 20,
   showAll?: string
 ) {
   const supabase = await createClient();
@@ -165,7 +165,7 @@ export async function getPosts(
   }
 
   if (techStackParams && techStackParams.length > 0) {
-    query = query.contains("tech_stack", techStackParams);
+    query = query.overlaps("tech_stack", techStackParams);
   }
 
   const from = (page - 1) * pageSize;

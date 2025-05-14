@@ -1,6 +1,6 @@
 "use client";
 
-import PostItem from "../ui/home/post-item";
+import PostItem from "../../ui/home/post-item";
 
 type Post = {
   id: number;

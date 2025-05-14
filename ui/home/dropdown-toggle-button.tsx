@@ -12,7 +12,7 @@ const DropdownToggleButton = ({
   return (
     <button
       onClick={onClick}
-      className='w-full border border-gray-300  px-3 py-2 text-sm text-left bg-white shadow-sm hover:border-gray-400 overflow-hidden whitespace-nowrap text-ellipsis rounded-[999px] flex justify-between'
+      className='w-full border border-gray-300  px-5 py-2 text-lg text-left bg-white shadow-sm hover:border-gray-400 overflow-hidden whitespace-nowrap text-ellipsis rounded-[999px] flex justify-between font-semibold text-gray-700'
     >
       <span>{label}</span>
       {icon && (

@@ -3,10 +3,10 @@ import { getCommentsByPostId } from "@/app/actions/comment-actions";
 import { getPostById } from "@/app/actions/post-actions";
 import CommentForm from "@/components/study/comment-form";
 import CommentList from "@/components/study/comment-list";
-import BackButton from "@/components/ui/register/back-button";
-import PostActionButtons from "@/components/ui/register/post-actions-button";
-import PostDescriptionLabel from "@/components/ui/register/post-description-label";
-import PostContent from "@/components/ui/register/PostContent";
+import BackButton from "@/ui/register/back-button";
+import PostActionButtons from "@/ui/register/post-actions-button";
+import PostDescriptionLabel from "@/ui/register/post-description-label";
+import PostContent from "@/ui/register/PostContent";
 import { createClient } from "@/utils/supabase/server";
 import Image from "next/image";
 
