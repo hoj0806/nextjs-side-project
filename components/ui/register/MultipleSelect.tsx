@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type MultiSelectProps = {
   name: string;
   label: string;
   placeholder: string;
   options: string[];
+  defaultValue?: string[]; // ✅ 추가
 };
 
 export default function MultiSelect({
@@ -14,9 +15,17 @@ export default function MultiSelect({
   label,
   placeholder,
   options,
+  defaultValue,
 }: MultiSelectProps) {
   const [selected, setSelected] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
+
+  // ✅ defaultValue 있을 경우 초기값 설정
+  useEffect(() => {
+    if (defaultValue && Array.isArray(defaultValue)) {
+      setSelected(defaultValue);
+    }
+  }, [defaultValue]);
 
   const toggleOption = (option: string) => {
     setSelected((prev) =>

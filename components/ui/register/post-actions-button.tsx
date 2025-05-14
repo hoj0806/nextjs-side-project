@@ -3,6 +3,7 @@ import {
   expirePost,
   unexpirePost,
 } from "@/app/actions/post-actions";
+import Link from "next/link";
 
 type PostActionButtonsProps = {
   postId: string;
@@ -38,6 +39,7 @@ export default function PostActionButtons({
           {expired ? "마감 취소" : "마감"}
         </button>
       </form>
+      <Link href={`/study/edit/${postId}`}>수정</Link>
     </div>
   );
 }

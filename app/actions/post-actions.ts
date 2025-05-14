@@ -62,6 +62,70 @@ export async function handleRegister(formData: FormData): Promise<void> {
   }
 }
 
+export async function updatePost(formData: FormData): Promise<void> {
+  const supabase = await createClient();
+
+  const data = Object.fromEntries(formData.entries());
+  const tech_stack = formData
+    .getAll("tech_stack")
+    .filter((t) => typeof t === "string") as string[];
+  const positions = formData
+    .getAll("positions")
+    .filter((p) => typeof p === "string") as string[];
+
+  const {
+    postId, // 🔥 FormData에서 받아온 postId 사용
+    category,
+    recruitment_count,
+    mode,
+    duration,
+    deadline,
+    contact_method,
+    contact_link,
+    title,
+    content,
+  } = data;
+
+  if (!postId || typeof postId !== "string") {
+    console.error("postId가 없습니다.");
+    return;
+  }
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    console.error("로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  const { error } = await supabase
+    .from("posts")
+    .update({
+      category,
+      recruitment_count,
+      mode,
+      duration,
+      deadline,
+      contact_method,
+      contact_link,
+      title,
+      content,
+      tech_stack,
+      positions,
+    })
+    .eq("id", postId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("업데이트 실패:", error.message);
+  } else {
+    console.log("✅ 업데이트 성공!");
+  }
+}
+
 export async function getPosts(
   categoryParams?: string,
   modeParams?: string,
