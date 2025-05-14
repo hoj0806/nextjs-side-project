@@ -4,6 +4,7 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import DropdownToggleButton from "./home/dropdown-toggle-button";
 import Image from "next/image";
+import TechStackButton from "@/components/home/techstack-button";
 
 type MultiSelectDropdownFilterProps = {
   paramsName: string;
@@ -22,25 +23,10 @@ const MultiSelectDropdownFilter = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<string>("popular");
 
-  // 한글 라벨과 내부 키를 매핑한 탭 정의
-  const tabs = [
-    { label: "인기", key: "popular" },
-    { label: "프론트엔드", key: "frontend" },
-    { label: "백엔드", key: "backend" },
-    { label: "모바일", key: "mobile" },
-    { label: "기타", key: "etc" },
-    { label: "모두보기", key: "all" },
-  ];
-
-  useEffect(() => {
-    const initial = searchParams.get(paramsName);
-    if (initial) {
-      setSelectedValues(initial.split(","));
-    }
-  }, [searchParams, paramsName]);
+  // ✅ searchParams에서 직접 선택된 값 추론
+  const selectedValues = searchParams.get(paramsName)?.split(",") ?? [];
 
   const createQueryString = useCallback(
     (name: string, values: string[]) => {
@@ -69,17 +55,15 @@ const MultiSelectDropdownFilter = ({
       newValues.push(value);
     }
 
-    setSelectedValues(newValues);
     const query = createQueryString(paramsName, newValues);
     router.push(`${pathname}?${query}`);
   };
 
   const handleSelectAll = () => {
-    if (selectedValues.length === data.length) {
-      setSelectedValues([]);
-    } else {
-      setSelectedValues(data.map((item) => item.name));
-    }
+    const allSelected = selectedValues.length === data.length;
+    const newValues = allSelected ? [] : data.map((item) => item.name);
+    const query = createQueryString(paramsName, newValues);
+    router.push(`${pathname}?${query}`);
   };
 
   useEffect(() => {
@@ -95,6 +79,15 @@ const MultiSelectDropdownFilter = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const tabs = [
+    { label: "인기", key: "popular" },
+    { label: "프론트엔드", key: "frontend" },
+    { label: "백엔드", key: "backend" },
+    { label: "모바일", key: "mobile" },
+    { label: "기타", key: "etc" },
+    { label: "모두보기", key: "all" },
+  ];
+
   const getFilteredData = () => {
     if (activeTab === "popular") {
       return data.filter((item) => item.popular);
@@ -107,7 +100,7 @@ const MultiSelectDropdownFilter = ({
     } else if (activeTab === "etc") {
       return data.filter((item) => item.category.includes("etc"));
     } else {
-      return data; // all
+      return data;
     }
   };
 
@@ -132,7 +125,7 @@ const MultiSelectDropdownFilter = ({
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                   className={`relative pb-2 text-lg font-semibold transition-colors
-                  ${isActive ? "text-black" : "text-gray-400"}`}
+                    ${isActive ? "text-black" : "text-gray-400"}`}
                 >
                   {tab.label}
                   {isActive && (
@@ -150,25 +143,13 @@ const MultiSelectDropdownFilter = ({
               const isNoneSelected = selectedValues.length === 0;
 
               return (
-                <button
+                <TechStackButton
                   key={item.name}
-                  onClick={() => handleSelect(item.name)}
-                  className={`px-3 py-2 text-lg flex items-center gap-3 border rounded-full transition-opacity duration-200 ${
-                    isSelected
-                      ? "opacity-100"
-                      : isNoneSelected
-                        ? "opacity-100"
-                        : "opacity-50"
-                  }`}
-                >
-                  <Image
-                    src={`/images/languages/${item.name}.png`}
-                    width={32.64}
-                    height={32.64}
-                    alt={item.name}
-                  />
-                  <span>{item.name}</span>
-                </button>
+                  name={item.name}
+                  isSelected={isSelected}
+                  isNoneSelected={isNoneSelected}
+                  onClick={handleSelect}
+                />
               );
             })}
           </div>

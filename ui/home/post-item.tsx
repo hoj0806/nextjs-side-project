@@ -39,25 +39,35 @@ export default function PostItem({ post, isLiked }: PostItemProps) {
   const isDeadlineSoon =
     deadlineDate.getTime() - now.getTime() < 3 * 24 * 60 * 60 * 1000;
   return (
-    <div className='bg-white border border-gray-400 shadow-sm rounded-3xl p-4 space-y-2 relative h-[300px]'>
+    <Link
+      href={`/study/${post.id}`}
+      className='hover:scale-105 bg-white border-2 border-gray-300 shadow-sm rounded-3xl p-4 space-y-2 relative w-[300px] h-[340px] pl-[25px] pt-[20px] pr-[25px]'
+    >
       {post.expired && <ExpiredLayer />}
-      <Link href={`/study/${post.id}`}>
-        <div className='relative z-20'>
+      <div className='relative z-20'>
+        <div className='flex gap-2 mb-4'>
           <CategoryBadge category={post.category} />
           {isNewPost && <NewPostBadge />}
           {!post.expired && !isNewPost && isDeadlineSoon && <DeadlineBadge />}
-
-          <div className='text-xs text-gray-400'>
-            마감일 | {post.deadline.split("-").join(".")}
-          </div>
-          <h2 className='text-lg font-semibold truncate text-black'>
-            {post.title}
-          </h2>
-          <PositionBox positions={post.positions} />
-          <StackBox stacks={post.tech_stack} />
-          <PostInfo view={post.view} commentCount={post.commentCount} />
         </div>
-      </Link>
+
+        <div className='text-md text-gray-400 font-semibold'>
+          마감일 | {post.deadline.split("-").join(".")}
+        </div>
+        <h2
+          className='text-lg font-semibold text-black overflow-hidden text-ellipsis break-words mb-3'
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
+          {post.title}
+        </h2>
+        <PositionBox positions={post.positions} />
+        <StackBox stacks={post.tech_stack} />
+        <PostInfo view={post.view} commentCount={post.commentCount} />
+      </div>
 
       {isLiked !== undefined && (
         <form
@@ -77,6 +87,6 @@ export default function PostItem({ post, isLiked }: PostItemProps) {
           </button>
         </form>
       )}
-    </div>
+    </Link>
   );
 }

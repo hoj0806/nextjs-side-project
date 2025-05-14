@@ -1,7 +1,7 @@
 import { getMyLikes } from "@/app/actions/like-actions";
 import { getPosts } from "@/app/actions/post-actions";
 import CategoryFilter from "../../ui/home/categoryFilter";
-import Pagination from "../../ui/pagination";
+import Pagination from "../../ui/home/pagination";
 import SearchFilterBar from "./search-filter-bar";
 import PostGrid from "./post-grid";
 
@@ -18,7 +18,7 @@ export default async function Main({
     tech_stack?: string;
   };
 }) {
-  const pageSize = 2;
+  const pageSize = 20;
   const page = parseInt(searchParams.page || "1", 10);
   const techStackArray = searchParams.tech_stack
     ? searchParams.tech_stack.split(",")

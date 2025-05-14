@@ -70,11 +70,12 @@ const Pagination = ({ total, pageSize }: PaginationProps) => {
           <Link
             key={page}
             href={pathname + "?" + createQueryString("page", String(page))}
-            className={`px-3 py-1 border rounded ${
-              page === currentPage
-                ? "bg-blue-500 text-white border-blue-500"
-                : "bg-white text-gray-700 hover:bg-gray-100 border-gray-300"
-            }`}
+            className={`w-9 h-9 flex items-center justify-center rounded-full text-gray-700 transition-colors
+    ${
+      page === currentPage
+        ? "bg-yellow-400"
+        : "bg-transparent hover:bg-gray-100"
+    }`}
           >
             {page}
           </Link>
