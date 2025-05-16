@@ -1,12 +1,15 @@
 // components/comments/CommentList.tsx
 
 import CommentDeleteButton from "@/components/CommentDeleteButton";
+import { formatDate } from "@/utils/helper";
+import Image from "next/image";
 
 type Comment = {
   id: string;
   content: string;
   created_at: string;
-  email?: string;
+  author_profile_image: string;
+  author_nickname: string;
 };
 
 type CommentListProps = {
@@ -20,20 +23,29 @@ export default function CommentList({ comments }: CommentListProps) {
         <p className='text-gray-500'>아직 댓글이 없습니다.</p>
       ) : (
         comments.map((comment) => (
-          <div
-            key={comment.id}
-            className='pb-4 border-b-gray-200 border-b-2 text-sm'
-          >
-            <div className='text-gray-500 text-xs mt-2 flex flex-col'>
-              <span>{comment.email ?? "알 수 없음"}</span>
-              <span>{comment.created_at}</span>
-            </div>
-            <div className='text-gray-800 whitespace-pre-wrap'>
-              {comment.content}
-            </div>
-
-            <div className='mt-2'>
+          <div key={comment.id} className='pb-4 border-b-2 mb-6'>
+            <div className='flex justify-between items-start'>
+              <div className='flex gap-4 items-start mb-3'>
+                <Image
+                  src={comment.author_profile_image}
+                  width={64}
+                  height={64}
+                  alt='profile image'
+                  className='rounded-full w-10 h-10 object-cover'
+                />
+                <div className='flex-1'>
+                  <div className='flex flex-col'>
+                    <span className='text-gray-900 font-boldtext-lg'>
+                      {comment.author_nickname}
+                    </span>
+                    <span>{formatDate(comment.created_at)}</span>
+                  </div>
+                </div>
+              </div>
               <CommentDeleteButton commentId={comment.id} />
+            </div>
+            <div className='text-gray-800 whitespace-pre-wrap mt-1 text-lg'>
+              {comment.content}
             </div>
           </div>
         ))

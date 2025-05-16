@@ -24,11 +24,23 @@ export async function insertComment(formData: FormData) {
     return;
   }
 
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("nickname, profile_image")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    console.error("❌ 프로필 정보 조회 실패:", profileError.message);
+    return;
+  }
+
   // 댓글 삽입
   const { error } = await supabase.from("comments").insert({
     post_id,
     content,
-    email: user.user_metadata.email,
+    author_nickname: profile.nickname,
+    author_profile_image: profile.profile_image,
   });
 
   if (error) {
@@ -56,9 +68,9 @@ export async function insertComment(formData: FormData) {
     .from("comment_notifications")
     .insert({
       user_id: postData?.user_id, // 게시물 작성자에게 알림
-      user_email: user.user_metadata.email, // 댓글 작성자의 이메일
       post_id,
       comment: content, // 댓글 내용
+      author_nickname: profile.nickname,
     });
 
   if (notificationError) {

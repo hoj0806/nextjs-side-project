@@ -3,11 +3,13 @@ import MDEditor from "@uiw/react-md-editor";
 import remarkGfm from "remark-gfm";
 const PostContent = ({ content }: { content: string }) => {
   return (
-    <MDEditor.Markdown
-      source={content}
-      remarkPlugins={[remarkGfm]}
-      className='whitespace-pre-wrap'
-    />
+    <div className='flex'>
+      <MDEditor.Markdown
+        source={content}
+        remarkPlugins={[remarkGfm]}
+        className='whitespace-pre-wrap'
+      />
+    </div>
   );
 };
 

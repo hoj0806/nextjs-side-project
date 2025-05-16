@@ -15,6 +15,8 @@ type Post = {
   tech_stack: string[];
   view: number;
   commentCount: number;
+  author_nickname: string;
+  author_profile_image: string;
 };
 
 type PostGridProps = {

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const PostInfo = ({
   view,
   commentCount,
@@ -6,9 +8,25 @@ const PostInfo = ({
   commentCount: number;
 }) => {
   return (
-    <div>
-      <span>조회 수 : {view}</span>
-      <span>댓글 수 : {commentCount}</span>
+    <div className='flex gap-2 items-center'>
+      <span className='flex flex-row gap-2 items-center'>
+        <Image
+          src='/icons/outlinedEye.svg'
+          width={18}
+          height={18}
+          alt='eye icon'
+        />
+        <p className='text-sm'>{view}</p>
+      </span>
+      <span className='flex flex-row gap-2 items-center'>
+        <Image
+          src='/icons/outlinedComment.svg'
+          width={18}
+          height={18}
+          alt='eye icon'
+        />
+        <p className='text-sm'>{commentCount}</p>
+      </span>
     </div>
   );
 };

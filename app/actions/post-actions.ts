@@ -28,6 +28,7 @@ export async function handleRegister(formData: FormData): Promise<void> {
   tech_stack = tech_stack
     .filter((tech) => typeof tech === "string") // 필터링하여 문자열만 처리
     .map((tech: string) => tech.trim().toLowerCase());
+
   // 현재 로그인한 유저 정보 가져오기
   const {
     data: { user },
@@ -36,6 +37,18 @@ export async function handleRegister(formData: FormData): Promise<void> {
 
   if (!user || userError) {
     console.error("로그인된 유저가 없습니다:", userError?.message);
+    return;
+  }
+
+  // profiles 테이블에서 nickname, profile_image 가져오기
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("nickname, profile_image")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError) {
+    console.error("프로필 정보를 가져오지 못했습니다:", profileError.message);
     return;
   }
 
@@ -52,7 +65,9 @@ export async function handleRegister(formData: FormData): Promise<void> {
     content,
     tech_stack,
     positions,
-    user_id: user.id, // 명시적으로 삽입
+    author_id: user.id,
+    author_nickname: profile.nickname,
+    author_profile_image: profile.profile_image,
   });
 
   if (error) {
@@ -117,7 +132,7 @@ export async function updatePost(formData: FormData): Promise<void> {
       positions,
     })
     .eq("id", postId)
-    .eq("user_id", user.id);
+    .eq("author_id", user.id);
 
   if (error) {
     console.error("업데이트 실패:", error.message);
@@ -235,7 +250,7 @@ export async function getMyPosts() {
   const { data, error } = await supabase
     .from("posts")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("author_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -306,7 +321,7 @@ export async function deletePost(formData: FormData) {
   // 삭제할 게시글이 현재 유저의 것인지 확인
   const { data: post, error: postError } = await supabase
     .from("posts")
-    .select("user_id")
+    .select("author_id")
     .eq("id", post_id)
     .single();
 
@@ -315,7 +330,7 @@ export async function deletePost(formData: FormData) {
     return;
   }
 
-  if (post.user_id !== user.id) {
+  if (post.author_id !== user.id) {
     console.error("❌ 이 게시글을 삭제할 권한이 없습니다.");
     return;
   }
@@ -354,7 +369,7 @@ export async function expirePost(formData: FormData) {
   // 게시글 소유자 확인
   const { data: post, error: postError } = await supabase
     .from("posts")
-    .select("user_id")
+    .select("author_id")
     .eq("id", postId)
     .single();
 
@@ -363,7 +378,7 @@ export async function expirePost(formData: FormData) {
     return;
   }
 
-  if (post.user_id !== user.id) {
+  if (post.author_id !== user.id) {
     console.error("❌ 이 게시글의 만료 상태를 변경할 권한이 없습니다.");
     return;
   }
@@ -398,7 +413,7 @@ export async function unexpirePost(formData: FormData) {
 
   const { data: post, error: postError } = await supabase
     .from("posts")
-    .select("user_id")
+    .select("author_id")
     .eq("id", postId)
     .single();
 
@@ -407,7 +422,7 @@ export async function unexpirePost(formData: FormData) {
     return;
   }
 
-  if (post.user_id !== user.id) {
+  if (post.author_id !== user.id) {
     console.error("❌ 이 게시글의 만료 상태를 변경할 권한이 없습니다.");
     return;
   }
@@ -445,10 +460,10 @@ export async function markPostAsRead(postId: string) {
 
   const { error: upsertError } = await supabase.from("read_posts").upsert(
     {
-      user_id: user.id,
+      author_id: user.id,
       post_id: postId,
     },
-    { onConflict: "user_id,post_id" } // 복합 유니크 키 기준
+    { onConflict: "author_id,post_id" } // 복합 유니크 키 기준
   );
 
   if (upsertError) {
@@ -474,7 +489,7 @@ export async function getMyReadData() {
   const { data: readPosts, error: fetchError } = await supabase
     .from("read_posts")
     .select("post_id") // 원하는 데이터만 선택
-    .eq("user_id", user.id); // 로그인한 사용자의 읽은 게시물만 조회
+    .eq("author_id", user.id); // 로그인한 사용자의 읽은 게시물만 조회
 
   if (fetchError) {
     console.error("❌ 읽은 게시물 조회 실패:", fetchError.message);
