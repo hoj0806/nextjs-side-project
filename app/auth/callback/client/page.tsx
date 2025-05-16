@@ -30,8 +30,10 @@ export default function AuthCallbackClient() {
       console.log("metadata", metadata);
       const { error } = await supabase.from("profiles").upsert({
         id: user.id,
-        first_name: metadata.first_name,
-        last_name: metadata.last_name,
+        nickname: metadata.nickname,
+        job: metadata.job,
+        career: metadata.career,
+        organization: metadata.organization,
       });
 
       if (error) {

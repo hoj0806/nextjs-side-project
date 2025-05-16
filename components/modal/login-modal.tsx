@@ -2,7 +2,33 @@
 
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import type { Props } from "@/types"; // Import Props type
+import type { Props } from "@/types";
+
+const jobOptions = [
+  "프론트엔드",
+  "백엔드",
+  "디자이너",
+  "IOS",
+  "안드로이드",
+  "데브옵스",
+  "PM",
+  "기획자",
+  "마케터",
+];
+
+const careerOptions = [
+  "0년",
+  "1년",
+  "2년",
+  "3년",
+  "4년",
+  "5년",
+  "6년",
+  "7년",
+  "8년",
+  "9년",
+  "10년 이상",
+];
 
 const LoginModal = ({ onClose }: Props) => {
   const supabase = createClient();
@@ -12,8 +38,10 @@ const LoginModal = ({ onClose }: Props) => {
     "github" | "google" | "kakao" | null
   >(null);
   const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
+    nickname: "",
+    job: jobOptions[0], // 기본값 첫번째 옵션
+    career: careerOptions[0], // 기본값 첫번째 옵션
+    organization: "",
   });
 
   const handleProviderSelect = (provider: "github" | "google" | "kakao") => {
@@ -29,16 +57,16 @@ const LoginModal = ({ onClose }: Props) => {
       return;
     }
 
-    // localStorage에 저장 (콜백 페이지에서 읽을 용도)
     localStorage.setItem(
       "pendingUserMetadata",
       JSON.stringify({
-        first_name: formData.first_name,
-        last_name: formData.last_name,
+        nickname: formData.nickname,
+        job: formData.job,
+        career: formData.career,
+        organization: formData.organization,
       })
     );
 
-    // OAuth 로그인 요청 (queryParams는 생략해도 됨)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: selectedProvider,
       options: {
@@ -89,24 +117,55 @@ const LoginModal = ({ onClose }: Props) => {
           <form onSubmit={handleSubmit} className='flex flex-col gap-3'>
             <input
               type='text'
-              placeholder='이름 (first name)'
-              value={formData.first_name}
+              placeholder='닉네임'
+              value={formData.nickname}
               onChange={(e) =>
-                setFormData({ ...formData, first_name: e.target.value })
+                setFormData({ ...formData, nickname: e.target.value })
               }
               className='border p-2 rounded'
               required
             />
+
+            <select
+              value={formData.job}
+              onChange={(e) =>
+                setFormData({ ...formData, job: e.target.value })
+              }
+              className='border p-2 rounded'
+              required
+            >
+              {jobOptions.map((job) => (
+                <option key={job} value={job}>
+                  {job}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={formData.career}
+              onChange={(e) =>
+                setFormData({ ...formData, career: e.target.value })
+              }
+              className='border p-2 rounded'
+              required
+            >
+              {careerOptions.map((career) => (
+                <option key={career} value={career}>
+                  {career}
+                </option>
+              ))}
+            </select>
+
             <input
               type='text'
-              placeholder='성 (last name)'
-              value={formData.last_name}
+              placeholder='소속'
+              value={formData.organization}
               onChange={(e) =>
-                setFormData({ ...formData, last_name: e.target.value })
+                setFormData({ ...formData, organization: e.target.value })
               }
               className='border p-2 rounded'
-              required
             />
+
             <button
               type='submit'
               className='bg-purple-600 text-white p-2 rounded hover:bg-purple-700'
