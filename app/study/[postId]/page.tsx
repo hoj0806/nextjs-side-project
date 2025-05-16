@@ -39,29 +39,49 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
     );
   }
 
-  const isAuthor = user?.id === post.user_id;
+  const isAuthor = user?.id === post.author_id;
 
   return (
     <section className='w-[852px] max-w-screen-xl mx-auto mt-10 bg-white space-y-6 relative text-black'>
       <BackButton />
 
-      {isAuthor && (
-        <PostActionButtons
-          postId={postId}
-          expired={post.expired}
-          isAuthor={isAuthor}
-        />
-      )}
-
       <div className='border-b-2 border-b-gray-200 pb-[32px]'>
-        <h1 className='text-3xl font-bold'>{post.title}</h1>
-        {/* 유저 닉네임 표시 되도록 */}
-        <p className='text-gray-500 text-md font-semibold'>
-          {post.deadline.split("-").join(".")}
-        </p>
+        <h1
+          className='text-3xl font-bold overflow-hidden text-ellipsis break-words'
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
+          {post.title}
+        </h1>
+        <div className='flex flex-row items-center mt-6 gap-4'>
+          <div className='flex flex-row gap-2 items-center'>
+            <Image
+              src={post.author_profile_image || "/default-profile.png"}
+              width={40}
+              height={40}
+              alt='profile_image'
+            />
+            <p className='truncate text-lg'>{post.author_nickname}</p>
+          </div>
+          <p className='text-gray-500 text-lg font-semibold'>
+            {post.deadline.split("-").join(".")}
+          </p>
+        </div>
       </div>
 
       <div className='grid grid-cols-2 gap-4 text-sm text-gray-600'>
+        {isAuthor && (
+          <div className='col-span-2 flex justify-end'>
+            <PostActionButtons
+              postId={postId}
+              expired={post.expired}
+              isAuthor={isAuthor}
+            />
+          </div>
+        )}
         <PostDescriptionLabel label='모집 구분'>
           {post.category}
         </PostDescriptionLabel>
@@ -114,7 +134,9 @@ const PostDetailPage = async ({ params }: PostDetailPageProps) => {
       <div className='border-b-gray-300 border-b-2 pb-10'>
         <h2 className='text-xl font-bold'>프로젝트 소개</h2>
       </div>
-      <PostContent content={post.content} />
+      <div className='mt-12'>
+        <PostContent content={post.content} />
+      </div>
 
       {/* 💬 댓글 작성 */}
       <CommentForm postId={postId} commentCount={comments.length} />

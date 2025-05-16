@@ -27,29 +27,24 @@ export default async function MyPage({ searchParams }: Props) {
 
   return (
     <main className='max-w-7xl mx-auto p-6'>
-      <h1 className='text-2xl font-bold mb-6'>내 활동 기록</h1>
-
-      <div className='flex space-x-4 mb-6'>
-        <Link
-          href='?tab=likes'
-          className={`px-4 py-2 rounded-full text-sm font-medium ${
-            isLikesTab
-              ? "bg-purple-600 text-white"
-              : "bg-gray-200 text-gray-800"
-          }`}
-        >
-          관심 목록
-        </Link>
+      <div className='flex space-x-4 mb-6 gap-3'>
         <Link
           href='?tab=read'
-          className={`px-4 py-2 rounded-full text-sm font-medium ${
-            isReadTab ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-800"
+          className={`text-2xl font-bold  ${
+            isReadTab ? "text-black" : "text-gray-400"
           }`}
         >
           읽은 목록
         </Link>
+        <Link
+          href='?tab=likes'
+          className={`text-2xl font-bold  ${
+            isLikesTab ? "text-black" : "text-gray-400"
+          }`}
+        >
+          관심 목록
+        </Link>
       </div>
-
       {isLikesTab && likedPosts.length === 0 && (
         <p className='text-gray-500'>아직 찜한 게시물이 없습니다.</p>
       )}

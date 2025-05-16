@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const StackBox = ({ stacks }: { stacks: string[] }) => {
   return (
-    <ul className='flex gap-3'>
+    <ul className='flex gap-3 mb-4'>
       {stacks.map((stack) => (
         <li key={stack} className='w-[32px] h-[32px] relative'>
           <Image
